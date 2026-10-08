@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.env
+.env.*
+!.env.example
+.vercel/
+*.tsbuildinfo
+playwright-report/
+test-results/
+demo-credentials.local.json
+artifacts/
+
+.vercel
+.env*
+
+!.env.example

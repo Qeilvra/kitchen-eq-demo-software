@@ -1,0 +1,9 @@
+.git
+.env
+.env.*
+demo-credentials.local.json
+test-results
+playwright-report
+artifacts
+node_modules
+.next

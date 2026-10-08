@@ -1,0 +1,205 @@
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  MessageSquare,
+  FileText,
+  BriefcaseBusiness,
+  Users,
+  Wrench,
+  UserRound,
+  CalendarClock,
+  AirVent,
+  ChartNoAxesCombined,
+  FolderOpen,
+  Settings,
+  LogOut,
+  ChevronDown,
+  ArrowUpRight,
+  Radio,
+  CircleHelp,
+  Search,
+  House,
+  ListChecks,
+  MoreHorizontal,
+} from "lucide-react";
+import { Brand } from "./brand";
+import { SearchInput, MobileMenu, BellIcon } from "./ui";
+import { canAccess, roleLabels, type Profile } from "@/lib/domain";
+import { logout } from "@/app/actions";
+import { NavLink } from "./nav-link";
+export const navigation = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, entity: null },
+  { href: "/enquiries", label: "Enquiries", icon: MessageSquare, entity: "enquiries" },
+  { href: "/quotations", label: "Quotations", icon: FileText, entity: "quotations" },
+  { href: "/projects", label: "Projects", icon: BriefcaseBusiness, entity: "projects" },
+  { href: "/customers", label: "Customers", icon: Users, entity: "customers" },
+  { href: "/complaints", label: "Complaints & service", icon: Wrench, entity: "complaints" },
+  { href: "/dispatch", label: "Dispatch board", icon: Radio, entity: "engineers" },
+  { href: "/engineers", label: "Engineers", icon: UserRound, entity: "engineers" },
+  { href: "/work_orders", label: "Work orders", icon: ListChecks, entity: "work_orders" },
+  {
+    href: "/amc_contracts",
+    label: "AMC & maintenance",
+    icon: CalendarClock,
+    entity: "amc_contracts",
+  },
+  {
+    href: "/pm_schedules",
+    label: "Preventive maintenance",
+    icon: CalendarClock,
+    entity: "pm_schedules",
+  },
+  { href: "/equipment", label: "Equipment", icon: AirVent, entity: "equipment" },
+  { href: "/service_reports", label: "Service reports", icon: FileText, entity: "service_reports" },
+  { href: "/reports", label: "Reports", icon: ChartNoAxesCombined, entity: null },
+  { href: "/documents", label: "Documents", icon: FolderOpen, entity: "documents" },
+];
+export function Shell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
+  const items = navigation.filter(
+    (item) =>
+      (!item.entity || canAccess(profile.role, item.entity)) &&
+      (profile.role !== "engineer" || !["/reports", "/dashboard"].includes(item.href)),
+  );
+  const nav = (
+    <nav className="nav-list">
+      {items.map(({ href, label, icon: Icon }) => (
+        <NavLink key={href} href={href}>
+          <Icon size={17} />
+          <span>{label}</span>
+        </NavLink>
+      ))}
+      <NavLink href="/settings">
+        <Settings size={17} />
+        <span>Workspace</span>
+      </NavLink>
+    </nav>
+  );
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <Link href="/dashboard" className="brand-link">
+          <Brand />
+        </Link>
+        <div className="sidebar-caption">OPERATIONS WORKSPACE</div>
+        {nav}
+        <div className="sidebar-bottom">
+          <div className="workspace-indicator">
+            <span className="status-dot" /> Oman · Operations
+          </div>
+          <Link href="/help">
+            <CircleHelp size={17} /> Demo guide <ArrowUpRight size={14} />
+          </Link>
+          <div className="sidebar-footer">CONNECTED. FROM START TO SERVICE.</div>
+        </div>
+      </aside>
+      <div className="main-shell">
+        <header className="topbar">
+          <MobileMenu>{nav}</MobileMenu>
+          <div className="topbar-context">
+            <span className="status-dot" /> AIRMECH workspace
+          </div>
+          <SearchInput />
+          <Link className="notification-button" href="/notifications" aria-label="Notifications">
+            <BellIcon />
+          </Link>
+          <span className="topbar-divider" />
+          <Link className="profile-menu" href="/settings">
+            <span className="avatar avatar-teal">{initials(profile.full_name)}</span>
+            <span>
+              <strong>{profile.full_name}</strong>
+              <small>{roleLabels[profile.role]}</small>
+            </span>
+            <ChevronDown size={14} />
+          </Link>
+        </header>
+        <main className="page-content">{children}</main>
+        <footer className="main-footer">
+          <span>
+            AIRMECH ONE <span className="footer-dot">·</span> Built by Qeilvra
+          </span>
+          <span>
+            Oman operations <span className="footer-dot">·</span> Client demo
+          </span>
+        </footer>
+      </div>
+      <nav className="bottom-nav">
+        <Link href="/dashboard">
+          <House size={20} />
+          Home
+        </Link>
+        <Link href={canAccess(profile.role, "work_orders") ? "/work_orders" : "/enquiries"}>
+          <ListChecks size={20} />
+          {canAccess(profile.role, "work_orders") ? "Jobs" : "Enquiries"}
+        </Link>
+        <Link href="/search">
+          <Search size={20} />
+          Search
+        </Link>
+        <Link href="/customers">
+          <Users size={20} />
+          Customers
+        </Link>
+        <Link href="/settings">
+          <MoreHorizontal size={20} />
+          More
+        </Link>
+      </nav>
+    </div>
+  );
+}
+export function initials(name: string) {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("");
+}
+export function FieldShell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
+  return (
+    <div className="field-shell">
+      <header className="field-header">
+        <Link href="/field">
+          <Brand compact />
+        </Link>
+        <Link href="/notifications" aria-label="Notifications" className="icon-button">
+          <BellIcon />
+        </Link>
+        <Link href="/settings">
+          <span className="avatar avatar-teal">{initials(profile.full_name)}</span>
+        </Link>
+      </header>
+      <main>{children}</main>
+      <nav className="bottom-nav">
+        <Link href="/field">
+          <House size={21} />
+          Home
+        </Link>
+        <Link href="/work_orders">
+          <ListChecks size={21} />
+          Jobs
+        </Link>
+        <Link href="/search">
+          <Search size={21} />
+          Search
+        </Link>
+        <Link href="/customers">
+          <Users size={21} />
+          Customers
+        </Link>
+        <Link href="/settings">
+          <MoreHorizontal size={21} />
+          More
+        </Link>
+      </nav>
+    </div>
+  );
+}
+export function SignOut() {
+  return (
+    <form action={logout}>
+      <button className="button secondary">
+        <LogOut size={15} /> Sign out
+      </button>
+    </form>
+  );
+}
