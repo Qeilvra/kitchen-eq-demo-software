@@ -1,3 +1,4 @@
+import { applyAirmechExamples } from "./airmech-examples";
 export const DEMO_TENANT = "a1000000-0000-4000-8000-000000000001";
 export const DEMO_PROJECT = "ejtjyxsumvtjtkurldax";
 export const accounts = [
@@ -5,7 +6,7 @@ export const accounts = [
   { email: "management@airmech.demo", name: "Salim Al Harthy", role: "management" },
   { email: "sales@airmech.demo", name: "Fatma Al Lawati", role: "sales_admin" },
   { email: "service@airmech.demo", name: "Khalid Al Maamari", role: "service_manager" },
-  { email: "engineer@airmech.demo", name: "Mohammed Khan", role: "engineer" },
+  { email: "engineer@airmech.demo", name: "Ahmed Rashid", role: "engineer" },
 ] as const;
 export type SeedRow = {
   id: string;
@@ -545,7 +546,7 @@ export function buildDataset(profiles: Record<string, string>, now = new Date())
       },
     );
   }
-  return data;
+  return applyAirmechExamples(data, date, timestamp, seedId);
 }
 export const insertOrder = [
   "customers",

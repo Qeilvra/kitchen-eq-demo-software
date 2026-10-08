@@ -1,3 +1,4 @@
+import { productPositioning } from "@/lib/company";
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <div className={`brand ${compact ? "compact" : ""}`}>
@@ -11,6 +12,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
         <strong>
           AIRMECH<span className="brand-one"> ONE</span>
         </strong>
+        <span className="brand-subtitle">{productPositioning}</span>
         <small>Built by Qeilvra</small>
       </span>
     </div>

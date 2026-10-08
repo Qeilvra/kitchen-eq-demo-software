@@ -65,8 +65,12 @@ test("seed is deterministic and all customer/site/equipment/work-order links agr
   assert.equal(data.customers.length, 16);
   assert.equal(data.sites.length, 24);
   assert.equal(data.equipment.length, 40);
-  assert.equal(data.work_orders.length, 36);
-  assert.equal(data.service_reports.length, 18);
+  assert.equal(data.work_orders.length, 40);
+  assert.equal(data.service_reports.length, 22);
+  assert.ok(new Set(data.equipment.map((asset) => asset.type)).size >= 14);
+  assert.ok(data.projects.some((project) => project.type === "Marine Maintenance"));
+  assert.ok(data.engineers.some((engineer) => engineer.specialization === "BMS & Controls"));
+  assert.equal(data.equipment[0].code, "CH-03");
   for (const table of insertOrder)
     for (const row of data[table] ?? []) {
       assert.equal(row.tenant_id, DEMO_TENANT);

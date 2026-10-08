@@ -33,7 +33,7 @@ const features = [
   {
     icon: ChartNoAxesCombined,
     title: "Complete visibility",
-    description: "Projects, AMC, complaints and reports.",
+    description: "Projects, assets, AMC and service reports.",
   },
 ];
 export default async function Login({
@@ -53,8 +53,8 @@ export default async function Login({
             <span className={styles.eyebrow}>WELCOME BACK</span>
             <h1 id="login-heading">Sign in to Airmech One</h1>
             <p>
-              Access your projects, service requests, teams and customer information — all in one
-              place.
+              Access your projects, service requests, teams and assets and service information — all
+              in one place.
             </p>
           </div>
           <div className={styles.notice}>

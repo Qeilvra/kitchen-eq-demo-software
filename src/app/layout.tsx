@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: { default: "AIRMECH ONE · Built by Qeilvra", template: "%s · AIRMECH ONE" },
+  title: { default: "AIRMECH ONE · Operations Management System", template: "%s · AIRMECH ONE" },
   description:
-    "Connected HVAC and MEP operations, from the first enquiry to the final service report.",
+    "Engineering and service operations across building services, maintenance, MEP, controls and marine support.",
   icons: { icon: "/favicon.svg" },
 };
 export default function RootLayout({ children }: { children: React.ReactNode }) {

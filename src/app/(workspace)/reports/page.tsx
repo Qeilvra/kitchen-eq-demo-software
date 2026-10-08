@@ -26,6 +26,7 @@ export default async function Reports({
   if (report.key === "complaints") query = query.not("status", "in", "(Resolved,Closed)");
   if (report.key === "workload") query = query.not("status", "in", "(Completed,Cancelled)");
   if (report.key === "pm") query = query.neq("status", "Completed");
+  if (report.key === "active-projects") query = query.eq("status", "Active");
   const { data, count, error } = await query
     .order("created_at", { ascending: false })
     .range((page - 1) * 20, page * 20 - 1);

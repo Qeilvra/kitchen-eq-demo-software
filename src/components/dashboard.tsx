@@ -13,9 +13,11 @@ import {
   Clock3,
   TriangleAlert,
   AirVent,
+  UserRound,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { canAccess, type Profile } from "@/lib/domain";
+import { operationalEvent } from "@/lib/company";
 import { formatDate, Badge, Empty } from "./records";
 import { initials } from "./shell";
 import type { Lookup } from "@/lib/data";
@@ -40,6 +42,12 @@ export async function Dashboard({ profile }: { profile: Profile }) {
   const db = await supabase();
   const renewalCutoff = new Date();
   renewalCutoff.setDate(renewalCutoff.getDate() + 30);
+  const today = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Muscat",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
   await db.rpc("am_sync_notifications");
   const [
     { data: summary, error },
@@ -49,6 +57,14 @@ export async function Dashboard({ profile }: { profile: Profile }) {
     { data: followups },
     { data: activity },
     { data: expiring },
+    activeProjects,
+    warrantyCases,
+    amcDue,
+    enquiryTotal,
+    quotationTotal,
+    wonProjects,
+    { data: customerRows },
+    { data: assetRows },
   ] = await Promise.all([
     db.rpc("am_dashboard"),
     db
@@ -88,8 +104,47 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       .lte("end_date", renewalCutoff.toISOString().slice(0, 10))
       .order("end_date")
       .limit(1),
+    db.from("projects").select("id", { count: "exact", head: true }).eq("status", "Active"),
+    db
+      .from("complaints")
+      .select("id", { count: "exact", head: true })
+      .eq("classification", "Warranty Service")
+      .not("status", "in", "(Resolved,Closed)"),
+    db
+      .from("pm_schedules")
+      .select("id", { count: "exact", head: true })
+      .not("amc_id", "is", null)
+      .neq("status", "Completed")
+      .lte("planned_date", renewalCutoff.toISOString().slice(0, 10)),
+    db.from("enquiries").select("id", { count: "exact", head: true }),
+    db.from("quotations").select("id", { count: "exact", head: true }),
+    db
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .not("quotation_id", "is", null)
+      .neq("status", "Cancelled"),
+    db
+      .from("customers")
+      .select("id,name,code,status,type")
+      .eq("status", "Active")
+      .order("code")
+      .limit(1),
+    db
+      .from("equipment")
+      .select(
+        "id,name,code,status,type,customer_id,site_id,amc_id,warranty_end,last_service,next_service",
+      )
+      .eq("type", "Chiller")
+      .order("code")
+      .limit(1),
   ]);
-  if (error || !summary)
+  if (
+    error ||
+    !summary ||
+    [activeProjects, warrantyCases, amcDue, enquiryTotal, quotationTotal, wonProjects].some(
+      (result) => result.error,
+    )
+  )
     throw new Error(
       "Unable to load workspace records. Confirm the database migrations have been applied.",
     );
@@ -123,25 +178,16 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       color: "blue",
     },
     {
-      label: "Quotations pending",
-      value: s.quotations,
-      href: "/quotations",
-      icon: FileText,
-      entity: "quotations",
-      context: `${s.won} approved quotations`,
-      color: "teal",
-    },
-    {
       label: "Active projects",
-      value: s.projects,
+      value: activeProjects.count ?? 0,
       href: "/projects",
       icon: BriefcaseBusiness,
       entity: "projects",
-      context: "Planning & execution",
+      context: "Engineering & service delivery",
       color: "teal",
     },
     {
-      label: "Open complaints",
+      label: "Open service cases",
       value: s.complaints,
       href: "/complaints",
       icon: ClipboardList,
@@ -150,21 +196,30 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       color: "red",
     },
     {
-      label: "Upcoming PM visits",
-      value: s.pm,
+      label: "Engineer jobs",
+      value: s.jobs,
+      href: "/work_orders",
+      icon: UserRound,
+      entity: "work_orders",
+      context: "Scheduled field jobs today",
+      color: "blue",
+    },
+    {
+      label: "AMC due",
+      value: amcDue.count ?? 0,
       href: "/pm_schedules",
       icon: CalendarClock,
       entity: "pm_schedules",
-      context: "In the next 14 days",
+      context: "Covered visits · next 30 days",
       color: "teal",
     },
     {
-      label: "Contracts expiring",
-      value: s.amc,
-      href: "/amc_contracts",
+      label: "Warranty cases",
+      value: warrantyCases.count ?? 0,
+      href: "/complaints",
       icon: ShieldCheck,
-      entity: "amc_contracts",
-      context: "In the next 30 days",
+      entity: "complaints",
+      context: "Open warranty service cases",
       color: "amber",
     },
   ].filter((m) => canAccess(profile.role, m.entity));
@@ -180,12 +235,12 @@ export async function Dashboard({ profile }: { profile: Profile }) {
     });
   });
   return (
-    <>
+    <div className="airmech-overview">
       <section className="dashboard-welcome">
         <div>
-          <span className="eyebrow light">YOUR OPERATIONS, AT A GLANCE</span>
+          <span className="eyebrow light">ENGINEERING & SERVICE OPERATIONS</span>
           <h1>Welcome back, {profile.full_name.split(" ")[0]}.</h1>
-          <p>Here’s what’s happening across your operations today.</p>
+          <p>Building services, engineering, maintenance, controls and marine support.</p>
         </div>
         <div className="welcome-date">
           <span>
@@ -215,7 +270,7 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       </section>
       <div className="kpi-grid">
         {metrics.map(({ label, value, href, icon: Icon, context, color }) => (
-          <Link key={href} href={href} className={`kpi-card ${color}`}>
+          <Link key={label} href={href} className={`kpi-card ${color}`}>
             <div className="kpi-top">
               <Icon size={19} />
               <ArrowUpRight size={14} />
@@ -232,7 +287,7 @@ export async function Dashboard({ profile }: { profile: Profile }) {
           {canAccess(profile.role, "complaints", true) && (
             <Link className="button secondary small" href="/complaints/new">
               <Plus size={14} />
-              New complaint
+              New service case
             </Link>
           )}
           {canAccess(profile.role, "enquiries", true) && (
@@ -247,18 +302,58 @@ export async function Dashboard({ profile }: { profile: Profile }) {
         <Link href="/complaints?status=New" className="urgent-strip">
           <TriangleAlert size={17} />
           <strong>
-            {s.emergency} emergency {s.emergency === 1 ? "complaint needs" : "complaints need"}{" "}
-            attention
+            {s.emergency} emergency{" "}
+            {s.emergency === 1 ? "service case needs" : "service cases need"} attention
           </strong>
           <span>Review and dispatch your team</span>
           <ArrowRight size={17} />
         </Link>
       )}
       <div className="dashboard-main-grid">
+        {canAccess(profile.role, "quotations") && (
+          <section className="panel commercial-pipeline">
+            <PanelTitle
+              title="Commercial Pipeline"
+              href="/reports?report=pipeline"
+              subtitle="View pipeline"
+            />
+            <div className="pipeline-stages">
+              {[
+                {
+                  label: "Enquiries",
+                  count: enquiryTotal.count ?? 0,
+                  href: "/enquiries",
+                  icon: MessageSquare,
+                },
+                {
+                  label: "Quotations",
+                  count: quotationTotal.count ?? 0,
+                  href: "/quotations",
+                  icon: FileText,
+                },
+                {
+                  label: "Won projects",
+                  count: wonProjects.count ?? 0,
+                  href: "/projects",
+                  icon: BriefcaseBusiness,
+                },
+              ].map(({ label, count, href, icon: Icon }) => (
+                <Link key={href} href={href}>
+                  <span>
+                    <Icon size={24} />
+                  </span>
+                  <strong>{count}</strong>
+                  <small>{label}</small>
+                </Link>
+              ))}
+            </div>
+            <p className="pipeline-note">Enquiry → Quotation → Approved → Project</p>
+          </section>
+        )}
         {canAccess(profile.role, "engineers") && (
           <section className="panel engineer-panel">
             <PanelTitle
-              title="Engineer schedule"
+              title="Engineer Dispatch"
               href="/dispatch"
               subtitle={`${s.jobs} jobs today`}
             />
@@ -287,42 +382,33 @@ export async function Dashboard({ profile }: { profile: Profile }) {
             </Link>
           </section>
         )}
-        {canAccess(profile.role, "work_orders") && (
-          <section className="panel service-activity-panel">
-            <PanelTitle title="Service activity" subtitle="Last 30 days" />
-            <div className="chart-legend">
-              <span>
-                <i className="legend-blue" />
-                Scheduled jobs
-              </span>
-              <span>
-                <i className="legend-teal" />
-                Completed jobs
-              </span>
-            </div>
-            <ActivityChart rows={s.work_activity} />
-            <div className="chart-footer">
-              <span>
-                <strong>{s.completed}</strong> completed in the last 7 days
-              </span>
-              <Link href="/reports" className="text-link">
-                View reports
-                <ArrowRight size={13} />
-              </Link>
-            </div>
-          </section>
-        )}
         {canAccess(profile.role, "complaints") && (
           <section className="panel complaint-panel">
-            <PanelTitle title="Complaint status" href="/complaints" />
+            <PanelTitle title="Service Desk" href="/complaints" />
             <ComplaintChart statuses={s.complaint_status} />
+          </section>
+        )}
+      </div>
+      <div className="dashboard-summary-grid">
+        {customerRows?.[0] && <CustomerOverview customer={customerRows[0]} />}
+        {assetRows?.[0] && canAccess(profile.role, "equipment") && (
+          <AssetOverview asset={assetRows[0]} />
+        )}
+        {canAccess(profile.role, "pm_schedules") && (
+          <section className="panel">
+            <PanelTitle
+              title="AMC / Preventive Maintenance"
+              href="/pm_schedules"
+              subtitle="All visits"
+            />
+            <MiniRecords entity="pm_schedules" rows={pm ?? []} lookup={lookup} icon="pm" />
           </section>
         )}
       </div>
       <div className="dashboard-lower-grid">
         {canAccess(profile.role, "complaints") && (
           <section className="panel">
-            <PanelTitle title="Recent complaints" href="/complaints" />
+            <PanelTitle title="Work Needing Attention" href="/complaints" />
             <MiniRecords
               entity="complaints"
               rows={complaints ?? []}
@@ -333,7 +419,7 @@ export async function Dashboard({ profile }: { profile: Profile }) {
         )}
         {canAccess(profile.role, "pm_schedules") && (
           <section className="panel">
-            <PanelTitle title="Upcoming maintenance" href="/pm_schedules" />
+            <PanelTitle title="Upcoming Preventive Maintenance" href="/pm_schedules" />
             <MiniRecords entity="pm_schedules" rows={pm ?? []} lookup={lookup} icon="pm" />
           </section>
         )}
@@ -345,15 +431,41 @@ export async function Dashboard({ profile }: { profile: Profile }) {
         )}
       </div>
       <div className="dashboard-bottom-grid">
+        {canAccess(profile.role, "work_orders") && (
+          <section className="panel service-activity-panel">
+            <PanelTitle title="Service Completion Trend" subtitle="Last 30 days" />
+            <div className="chart-legend">
+              <span>
+                <i className="legend-blue" />
+                Scheduled jobs
+              </span>
+              <span>
+                <i className="legend-teal" />
+                Completed jobs
+              </span>
+            </div>
+            <ActivityChart rows={s.work_activity.filter((row) => row.day <= today)} />
+            <div className="chart-footer">
+              <span>
+                <strong>{s.completed}</strong> completed in the last 7 days
+              </span>
+              <Link href="/reports" className="text-link">
+                View reports
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+          </section>
+        )}
+
         <section className="panel">
-          <PanelTitle title="Latest activity" href="/activity_log" />
+          <PanelTitle title="Recent Activity" href="/activity_log" />
           <div className="activity-feed">
             {(activity ?? []).map((a) => (
               <Link key={a.id} href={`/${a.entity_type}/${a.entity_id}`}>
                 <span className="timeline-dot" />
                 <div>
-                  <strong>{a.name}</strong>
-                  <small>{String(a.entity_type).replaceAll("_", " ")}</small>
+                  <strong>{operationalEvent(a.name)}</strong>
+                  <small>{operationalEvent(String(a.entity_type).replaceAll("_", " "))}</small>
                 </div>
                 <time>{formatDate(a.created_at, true)}</time>
                 <ArrowUpRight size={14} />
@@ -377,7 +489,131 @@ export async function Dashboard({ profile }: { profile: Profile }) {
           </Link>
         )}
       </div>
-    </>
+    </div>
+  );
+}
+async function CustomerOverview({
+  customer,
+}: {
+  customer: { id: string; name: string; code: string; status: string; type: string };
+}) {
+  const db = await supabase();
+  const { data, error } = await db.rpc("am_customer_metrics", { targets: [customer.id] });
+  if (error) throw new Error("Unable to load customer summary.");
+  const metrics = data?.[0];
+  return (
+    <section className="panel">
+      <PanelTitle
+        title="Customer Summary"
+        href={`/customers/${customer.id}`}
+        subtitle="Customer 360"
+      />
+      <Link href={`/customers/${customer.id}`} className="overview-record-heading">
+        <span className="avatar avatar-teal">{initials(customer.name)}</span>
+        <div>
+          <strong>{customer.name}</strong>
+          <small>{customer.type} · Oman</small>
+        </div>
+        <Badge value={customer.status} />
+      </Link>
+      <div className="overview-record-metrics">
+        {[
+          { label: "Sites", value: metrics?.sites_count ?? 0, tab: "sites" },
+          { label: "Assets", value: metrics?.equipment_count ?? 0, tab: "equipment" },
+          { label: "Open cases", value: metrics?.open_complaints ?? 0, tab: "complaints" },
+          { label: "AMC", value: metrics?.amc_count ?? 0, tab: "amc_contracts" },
+        ].map((metric) => (
+          <Link key={metric.tab} href={`/customers/${customer.id}?tab=${metric.tab}`}>
+            <small>{metric.label}</small>
+            <strong>{metric.value}</strong>
+          </Link>
+        ))}
+      </div>
+      <Link className="panel-bottom-link" href={`/customers/${customer.id}?tab=activity_log`}>
+        Customer activity
+        <ArrowRight size={14} />
+      </Link>
+    </section>
+  );
+}
+async function AssetOverview({
+  asset,
+}: {
+  asset: {
+    id: string;
+    name: string;
+    code: string;
+    status: string;
+    customer_id: string;
+    site_id: string;
+    amc_id: string | null;
+    warranty_end: string | null;
+    last_service: string | null;
+    next_service: string | null;
+  };
+}) {
+  const db = await supabase();
+  const [{ data: history }, { count: cases }, lookup] = await Promise.all([
+    db
+      .from("service_reports")
+      .select("id,code,name,visit_date")
+      .eq("equipment_id", asset.id)
+      .order("visit_date", { ascending: false })
+      .limit(3),
+    db
+      .from("complaints")
+      .select("id", { head: true, count: "exact" })
+      .eq("equipment_id", asset.id)
+      .not("status", "in", "(Resolved,Closed)"),
+    lookups(["customers", "sites"], { customers: [asset.customer_id], sites: [asset.site_id] }),
+  ]);
+  return (
+    <section className="panel">
+      <PanelTitle title="Asset Summary" href={`/equipment/${asset.id}`} subtitle="Asset record" />
+      <Link href={`/equipment/${asset.id}`} className="overview-record-heading">
+        <span className="overview-asset-icon">
+          <AirVent size={30} />
+        </span>
+        <div>
+          <strong>{asset.name}</strong>
+          <small>
+            {lookup.customers?.[0]?.name} · {lookup.sites?.[0]?.name}
+          </small>
+        </div>
+        <Badge value={asset.status} />
+      </Link>
+      <div className="overview-record-metrics">
+        <div>
+          <small>Warranty</small>
+          <strong>{formatDate(asset.warranty_end)}</strong>
+        </div>
+        <div>
+          <small>AMC</small>
+          <strong>{asset.amc_id ? "Linked" : "None"}</strong>
+        </div>
+        <div>
+          <small>Next service</small>
+          <strong>{formatDate(asset.next_service)}</strong>
+        </div>
+        <Link href={`/equipment/${asset.id}?tab=complaints`}>
+          <small>Open cases</small>
+          <strong>{cases ?? 0}</strong>
+        </Link>
+      </div>
+      <div className="overview-history">
+        {(history ?? []).map((report) => (
+          <Link href={`/service_reports/${report.id}`} key={report.id}>
+            <span>{formatDate(report.visit_date)}</span>
+            <strong>{report.name}</strong>
+            <Badge value="Completed" />
+          </Link>
+        ))}
+      </div>
+      <Link className="panel-bottom-link" href={`/equipment/${asset.id}?tab=service_reports`}>
+        Asset service history
+        <ArrowRight size={14} />
+      </Link>
+    </section>
   );
 }
 export function PanelTitle({
@@ -651,7 +887,7 @@ export async function FieldHome({ profile }: { profile: Profile }) {
         </Link>
         <Link href="/search">
           <AirVent size={24} />
-          Find equipment
+          Find assets
         </Link>
         <Link href="/service_reports">
           <FileText size={24} />

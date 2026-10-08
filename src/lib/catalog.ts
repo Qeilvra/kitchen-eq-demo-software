@@ -1,3 +1,4 @@
+import { assetCategories, projectCategories } from "./company";
 export type Field = {
   key: string;
   label: string;
@@ -40,7 +41,7 @@ const o = (key: string, label: string, options: string[], required = false): Fie
 });
 const customer = r("customer_id", "Customer", "customers", true);
 const site = r("site_id", "Site", "sites", true);
-const asset = r("equipment_id", "Equipment", "equipment", true);
+const asset = r("equipment_id", "Asset", "equipment", true);
 const engineer = r("engineer_id", "Engineer", "engineers");
 const notes = f("notes", "Notes", "textarea");
 const title = f("name", "Name / description", "text", true);
@@ -78,12 +79,22 @@ export const catalog: Record<string, Entity> = {
     "Customers",
     "Customer",
     "CUS",
-    "Your customer relationships, connected to every site and service.",
+    "Everything related to each customer, their sites, assets and service history in one place.",
     [
       o(
         "type",
         "Customer type",
-        ["Commercial", "Hospitality", "Industrial", "Government", "Residential"],
+        [
+          "Commercial",
+          "Hospitality",
+          "Industrial",
+          "Office Complex",
+          "Retail",
+          "Facilities Management",
+          "Marine",
+          "Government",
+          "Residential",
+        ],
         true,
       ),
       f("phone", "Phone"),
@@ -157,7 +168,20 @@ export const catalog: Record<string, Entity> = {
       r("contact_id", "Contact", "contacts"),
       f("received_date", "Received date", "date", true),
       o("source", "Source", ["Phone", "Email", "Website", "Referral", "Walk In"]),
-      o("category", "Category", ["Service", "Installation", "Maintenance", "AMC", "Replacement"]),
+      o("category", "Category", [
+        "Service",
+        "Installation",
+        "Maintenance",
+        "AMC",
+        "Replacement",
+        "MEP Services",
+        "BMS & Controls",
+        "Electrical",
+        "Mechanical",
+        "Engineering",
+        "Facilities Maintenance",
+        "Marine Maintenance",
+      ]),
       f("description", "Requirement", "textarea", true),
       priority,
       r("assigned_to", "Assigned employee", "profiles"),
@@ -249,12 +273,12 @@ export const catalog: Record<string, Entity> = {
     "Projects",
     "Project",
     "PRJ",
-    "Plan installations and jobs with complete commercial context.",
+    "Engineering, refurbishment, installation and maintenance projects with complete commercial context.",
     [
       customer,
       site,
       r("quotation_id", "Approved quotation", "quotations"),
-      o("type", "Project type", ["Installation", "Replacement", "Commissioning", "Service"]),
+      o("type", "Project type", projectCategories),
       f("description", "Scope of work", "textarea"),
       f("start_date", "Start date", "date"),
       f("target_date", "Target completion", "date"),
@@ -275,31 +299,16 @@ export const catalog: Record<string, Entity> = {
     ["project_id", "engineer_id"],
   ),
   equipment: entity(
-    "Equipment",
-    "Equipment",
+    "Assets",
+    "Asset",
     "AST",
-    "An asset register with warranty, AMC and complete service history.",
+    "Mechanical, electrical, HVAC, controls and marine assets with warranty, AMC and complete service history.",
     [
       customer,
       site,
       r("project_id", "Installed under project", "projects"),
       r("amc_id", "AMC contract", "amc_contracts"),
-      o(
-        "type",
-        "Equipment type",
-        [
-          "Split AC",
-          "Package Unit",
-          "AHU",
-          "FCU",
-          "Chiller",
-          "VRF System",
-          "Pump",
-          "Ventilation Unit",
-          "Control Panel",
-        ],
-        true,
-      ),
+      o("type", "Asset type", assetCategories, true),
       f("brand", "Brand", "text", true),
       f("model", "Model"),
       f("serial_number", "Serial number"),
@@ -317,10 +326,10 @@ export const catalog: Record<string, Entity> = {
     ["customer_id", "site_id", "type", "warranty_end", "next_service"],
   ),
   complaints: entity(
-    "Complaints & service",
-    "Complaint",
+    "Service Desk",
+    "Service Case",
     "CMP",
-    "Register issues, prioritize response and keep customers informed.",
+    "Warranty, AMC and paid service cases across building services, engineering, facilities and marine maintenance.",
     [
       customer,
       site,
@@ -347,7 +356,7 @@ export const catalog: Record<string, Entity> = {
     "Engineers",
     "Engineer",
     "ENG",
-    "Your field team, availability and current workload.",
+    "Specialists in HVAC, MEP, controls, electrical, mechanical, facilities and marine services.",
     [
       r("profile_id", "Login profile", "profiles"),
       f("specialization", "Specialization", "text", true),
@@ -355,7 +364,7 @@ export const catalog: Record<string, Entity> = {
       f("skills", "Skills", "textarea"),
       notes,
     ],
-    ["Available", "Assigned", "On Site", "Off Duty", "Leave"],
+    ["Available", "Assigned", "Travelling", "On Site", "Busy", "Off Duty", "Leave"],
     ["specialization", "phone", "jobs_today", "assigned_jobs", "completed_jobs"],
     { computed: ["jobs_today", "assigned_jobs", "completed_jobs"] },
   ),
@@ -368,7 +377,7 @@ export const catalog: Record<string, Entity> = {
       customer,
       site,
       asset,
-      r("complaint_id", "Complaint", "complaints"),
+      r("complaint_id", "Service case", "complaints"),
       engineer,
       f("scheduled_at", "Scheduled time", "datetime-local", true),
       priority,
@@ -395,7 +404,7 @@ export const catalog: Record<string, Entity> = {
     "Readings",
     "Reading",
     "RDG",
-    "Capture actual equipment measurements.",
+    "Capture actual mechanical, electrical and controls readings.",
     [
       r("work_order_id", "Work order", "work_orders", true),
       num("value", "Measured value", -100000),
@@ -449,10 +458,10 @@ export const catalog: Record<string, Entity> = {
     ["customer_id", "end_date", "frequency", "next_visit"],
   ),
   amc_equipment: entity(
-    "Equipment coverage",
+    "Asset coverage",
     "Coverage",
     "COV",
-    "Equipment explicitly covered by this contract.",
+    "Assets explicitly covered by this contract.",
     [r("amc_id", "Contract", "amc_contracts", true), asset],
     ["Covered"],
     ["amc_id", "equipment_id"],
@@ -520,7 +529,7 @@ export const catalog: Record<string, Entity> = {
     [
       customer,
       r("work_order_id", "Work order", "work_orders"),
-      r("equipment_id", "Equipment", "equipment"),
+      r("equipment_id", "Asset", "equipment"),
       r("site_id", "Site", "sites"),
       r("quotation_id", "Quotation", "quotations"),
       r("project_id", "Project", "projects"),

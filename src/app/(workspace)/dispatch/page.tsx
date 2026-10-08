@@ -41,7 +41,7 @@ export default async function Dispatch({
     <>
       <PageHeader
         eyebrow="SERVICE OPERATIONS"
-        title="Dispatch board"
+        title="Engineer Dispatch"
         description="The right engineer. The right job. A clear plan for the day."
       />
       <Notice {...query} />
@@ -49,7 +49,7 @@ export default async function Dispatch({
         <div>
           <Radio size={20} />
           <strong>{unassigned.length}</strong>
-          <span>Unassigned complaints</span>
+          <span>Unassigned service cases</span>
         </div>
         <div>
           <UserRound size={20} />
@@ -64,7 +64,7 @@ export default async function Dispatch({
         <div className="danger-text">
           <TriangleAlert size={20} />
           <strong>{urgent.length}</strong>
-          <span>Emergency complaints</span>
+          <span>Emergency service cases</span>
         </div>
       </div>
       <div className="dispatch-grid">
@@ -190,7 +190,7 @@ export default async function Dispatch({
         {!jobs?.length && (
           <Empty
             title="No assigned jobs"
-            detail="Assign an engineer to an open complaint to create a work order."
+            detail="Assign an engineer to an open service case to create a work order."
           />
         )}
       </section>

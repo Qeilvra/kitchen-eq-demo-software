@@ -6,14 +6,14 @@ import { canAccess } from "@/lib/domain";
 const steps = [
   {
     title: "See the operation",
-    description: "Start with the dashboard, review urgent service issues and upcoming actions.",
+    description: "Start with the overview, review urgent service issues and upcoming actions.",
     href: "/dashboard",
     entity: "customers",
   },
   {
     title: "Meet the customer",
     description:
-      "Open Al Noor Grand Hotel and explore its sites, contacts, assets and service history.",
+      "Open Muscat Commercial Tower and explore its sites, contacts, assets and service history.",
     href: "/customers",
     entity: "customers",
   },
@@ -27,7 +27,7 @@ const steps = [
   {
     title: "Respond to a service issue",
     description:
-      "Open an asset, register a complaint and dispatch an engineer. Warranty or AMC classification follows the asset coverage.",
+      "Open an asset, register a service case and dispatch an engineer. Warranty or AMC classification follows the asset coverage.",
     href: "/complaints",
     entity: "complaints",
   },
@@ -41,7 +41,7 @@ const steps = [
   {
     title: "Close the service loop",
     description:
-      "Complete the work order, print its service report and see the visit in equipment history.",
+      "Complete the work order, print its service report and see the visit in asset history.",
     href: "/service_reports",
     entity: "service_reports",
   },

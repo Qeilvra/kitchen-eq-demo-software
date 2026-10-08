@@ -31,8 +31,8 @@ export default async function Settings({
     <>
       <PageHeader
         eyebrow="YOUR WORKSPACE"
-        title="Workspace & account"
-        description="Your account, access and operations context."
+        title="Admin & account"
+        description="Administration, account access and engineering operations context."
       />
       <Notice {...query} />
       <div className="settings-grid">

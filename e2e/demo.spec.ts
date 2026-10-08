@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync, existsSync } from "node:fs";
 test("login renders and protected workspace redirects to login", async ({ page }) => {
   await page.goto("/login");
-  await expect(page.getByRole("heading", { name: "Good to have you back." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sign in to Airmech One" })).toBeVisible();
   await expect(page.getByLabel("Email address")).toBeVisible();
   await page.goto("/customers");
   await expect(page).toHaveURL(/\/login/);

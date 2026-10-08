@@ -21,6 +21,7 @@ export async function GET(request: Request) {
     if (report.key === "complaints") query = query.not("status", "in", "(Resolved,Closed)");
     if (report.key === "workload") query = query.not("status", "in", "(Completed,Cancelled)");
     if (report.key === "pm") query = query.neq("status", "Completed");
+    if (report.key === "active-projects") query = query.eq("status", "Active");
     const { data, error } = await query;
     if (error) return NextResponse.json({ error: "Export failed." }, { status: 500 });
     rows.push(...((data ?? []) as unknown as Record<string, unknown>[]));

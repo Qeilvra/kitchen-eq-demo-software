@@ -27,31 +27,34 @@ import { SearchInput, MobileMenu, BellIcon } from "./ui";
 import { canAccess, roleLabels, type Profile } from "@/lib/domain";
 import { logout } from "@/app/actions";
 import { NavLink } from "./nav-link";
+import { serviceAreas } from "@/lib/company";
 export const navigation = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, entity: null },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, entity: null },
+  { href: "/customers", label: "Customers", icon: Users, entity: "customers" },
   { href: "/enquiries", label: "Enquiries", icon: MessageSquare, entity: "enquiries" },
   { href: "/quotations", label: "Quotations", icon: FileText, entity: "quotations" },
   { href: "/projects", label: "Projects", icon: BriefcaseBusiness, entity: "projects" },
-  { href: "/customers", label: "Customers", icon: Users, entity: "customers" },
-  { href: "/complaints", label: "Complaints & service", icon: Wrench, entity: "complaints" },
-  { href: "/dispatch", label: "Dispatch board", icon: Radio, entity: "engineers" },
+  { href: "/complaints", label: "Service Desk", icon: Wrench, entity: "complaints" },
+  { href: "/equipment", label: "Assets", icon: AirVent, entity: "equipment" },
   { href: "/engineers", label: "Engineers", icon: UserRound, entity: "engineers" },
-  { href: "/work_orders", label: "Work orders", icon: ListChecks, entity: "work_orders" },
+  { href: "/work_orders", label: "Work Orders", icon: ListChecks, entity: "work_orders" },
   {
     href: "/amc_contracts",
-    label: "AMC & maintenance",
+    label: "AMC / PM",
     icon: CalendarClock,
     entity: "amc_contracts",
   },
+  { href: "/reports", label: "Reports", icon: ChartNoAxesCombined, entity: null },
+];
+const operationalTools = [
+  { href: "/dispatch", label: "Engineer Dispatch", icon: Radio, entity: "engineers" },
   {
     href: "/pm_schedules",
     label: "Preventive maintenance",
     icon: CalendarClock,
     entity: "pm_schedules",
   },
-  { href: "/equipment", label: "Equipment", icon: AirVent, entity: "equipment" },
-  { href: "/service_reports", label: "Service reports", icon: FileText, entity: "service_reports" },
-  { href: "/reports", label: "Reports", icon: ChartNoAxesCombined, entity: null },
+  { href: "/service_reports", label: "Service Reports", icon: FileText, entity: "service_reports" },
   { href: "/documents", label: "Documents", icon: FolderOpen, entity: "documents" },
 ];
 export function Shell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
@@ -70,8 +73,21 @@ export function Shell({ profile, children }: { profile: Profile; children: React
       ))}
       <NavLink href="/settings">
         <Settings size={17} />
-        <span>Workspace</span>
+        <span>Admin</span>
       </NavLink>
+      <details className="nav-tools">
+        <summary>
+          Operational tools <ChevronDown size={13} />
+        </summary>
+        {operationalTools
+          .filter((item) => canAccess(profile.role, item.entity))
+          .map(({ href, label, icon: Icon }) => (
+            <NavLink key={href} href={href}>
+              <Icon size={16} />
+              <span>{label}</span>
+            </NavLink>
+          ))}
+      </details>
     </nav>
   );
   return (
@@ -89,7 +105,12 @@ export function Shell({ profile, children }: { profile: Profile; children: React
           <Link href="/help">
             <CircleHelp size={17} /> Demo guide <ArrowUpRight size={14} />
           </Link>
-          <div className="sidebar-footer">CONNECTED. FROM START TO SERVICE.</div>
+          <div className="sidebar-services">
+            {serviceAreas.map((area) => (
+              <span key={area}>{area}</span>
+            ))}
+          </div>
+          <div className="sidebar-footer">ACROSS OMAN AND BEYOND</div>
         </div>
       </aside>
       <div className="main-shell">
@@ -125,19 +146,19 @@ export function Shell({ profile, children }: { profile: Profile; children: React
       <nav className="bottom-nav">
         <Link href="/dashboard">
           <House size={20} />
-          Home
-        </Link>
-        <Link href={canAccess(profile.role, "work_orders") ? "/work_orders" : "/enquiries"}>
-          <ListChecks size={20} />
-          {canAccess(profile.role, "work_orders") ? "Jobs" : "Enquiries"}
-        </Link>
-        <Link href="/search">
-          <Search size={20} />
-          Search
+          Overview
         </Link>
         <Link href="/customers">
           <Users size={20} />
           Customers
+        </Link>
+        <Link href={canAccess(profile.role, "complaints") ? "/complaints" : "/enquiries"}>
+          <Wrench size={20} />
+          {canAccess(profile.role, "complaints") ? "Service Desk" : "Enquiries"}
+        </Link>
+        <Link href={canAccess(profile.role, "amc_contracts") ? "/amc_contracts" : "/quotations"}>
+          <CalendarClock size={20} />
+          {canAccess(profile.role, "amc_contracts") ? "AMC / PM" : "Quotations"}
         </Link>
         <Link href="/settings">
           <MoreHorizontal size={20} />

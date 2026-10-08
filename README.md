@@ -1,6 +1,6 @@
 # AIRMECH ONE
 
-A fresh, single-application HVAC / MEP client demonstration. Built by Qeilvra. Next.js App Router, React, strict TypeScript, Supabase PostgreSQL/Auth/private Storage and pnpm. Designed for Vercel.
+A fresh, single-application Operations Management System for engineering and service teams. Built by Qeilvra. Next.js App Router, React, strict TypeScript, Supabase PostgreSQL/Auth/private Storage and pnpm. Designed for Vercel.
 
 ## Run locally
 
@@ -25,7 +25,7 @@ Every business table has typed relational columns, tenant ownership, references 
 
 ## Modules
 
-Dashboard, customers and Customer 360, contacts, sites, enquiries and notes, quotations and items/follow-ups/revisions, projects and teams, equipment/warranty/history, complaints and classification overrides, engineers, dispatch, work orders, engineer field home, readings, parts, service reports, AMC coverage, PM schedules/visits, private documents, in-app notifications, global search, reports/CSV, account/workspace and demonstration guide.
+Overview, customers and Customer 360, contacts, sites, enquiries and notes, quotations and items/follow-ups/revisions, projects and teams, assets/warranty/history, service desk and classification overrides, engineers, dispatch, work orders, engineer field home, readings, parts, service reports, AMC coverage, PM schedules/visits, private documents, in-app notifications, global search, reports/CSV, account/workspace and demonstration guide.
 
 ## Commands
 
@@ -58,3 +58,9 @@ e2e/                    Desktop and mobile browser smoke checks
 ```
 
 See [SUPABASE.md](SUPABASE.md), [DEPLOYMENT.md](DEPLOYMENT.md) and [DEMO.md](DEMO.md). Secrets and generated login credentials are gitignored.
+
+## Airmech positioning
+
+AIRMECH ONE is an Operations Management System covering building services, engineering, maintenance, MEP/HVAC, BMS/controls, facilities and marine support. Service-area terminology is aligned with [Airmech’s published divisions](https://www.airmech.net/). All customers, contacts, assets and operating examples remain fictional.
+
+`pnpm db:align-demo` updates only identified demo descriptions/categories and adds missing linked historical examples. It preserves existing IDs, workflow states, dates, prices, Auth accounts, passwords and roles. Its pre-update business-record backup is stored locally under ignored `artifacts/`. Run normal `db:seed` for a fresh setup; the existing reset procedure restores the expanded examples.

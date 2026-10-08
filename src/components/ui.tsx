@@ -111,7 +111,7 @@ export function SearchInput({
         aria-label="Search all records"
         name="q"
         defaultValue={defaultValue}
-        placeholder="Search customers, jobs, equipment…"
+        placeholder="Search customers, assets, service cases, projects…"
       />
       <button type="submit" className="search-submit" aria-label="Search">
         <ArrowUpRight size={16} />
@@ -132,7 +132,12 @@ export function MobileMenu({ children }: { children: React.ReactNode }) {
         {open ? <X size={22} /> : <Menu size={22} />}
       </button>
       {open && (
-        <div className="mobile-more" onClick={() => setOpen(false)}>
+        <div
+          className="mobile-more"
+          onClick={(event) => {
+            if ((event.target as HTMLElement).closest("a")) setOpen(false);
+          }}
+        >
           {children}
         </div>
       )}

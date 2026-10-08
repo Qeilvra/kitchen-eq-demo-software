@@ -15,6 +15,7 @@
     "test": "tsx --test tests/*.test.ts",
     "db:migrate": "tsx --env-file=.env.local scripts/migrate.ts",
     "db:seed": "tsx --env-file=.env.local scripts/seed.ts",
+    "db:align-demo": "tsx --env-file=.env.local scripts/align-demo.ts",
     "db:reset-demo": "tsx --env-file=.env.local scripts/seed.ts --reset",
     "test:live": "tsx --env-file=.env.local scripts/verify-live.ts"
   },

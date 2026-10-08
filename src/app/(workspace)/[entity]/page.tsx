@@ -16,6 +16,7 @@ import {
 } from "@/components/records";
 import { UploadButton, WorkflowButton } from "@/components/workflow-panels";
 import { ArrowUpRight, Bell, Activity } from "lucide-react";
+import { operationalEvent } from "@/lib/company";
 export default async function ListPage({
   params,
   searchParams,
@@ -61,6 +62,16 @@ export default async function ListPage({
         }
       />
       <Notice success={query.success} error={query.error} />
+      {entity === "amc_contracts" && canAccess(profile.role, "pm_schedules") && (
+        <div className="record-workflow-actions">
+          <Link href="/pm_schedules" className="button secondary">
+            Preventive Maintenance
+          </Link>
+          <Link href="/amc_equipment" className="button secondary">
+            Asset coverage
+          </Link>
+        </div>
+      )}
       <section className="panel">
         <Filters
           entity={entity}
@@ -78,9 +89,9 @@ export default async function ListPage({
                   {entity === "notifications" ? <Bell size={18} /> : <Activity size={18} />}
                 </span>
                 <Link href={`/${row.entity_type}/${row.entity_id}`}>
-                  <strong>{row.name}</strong>
+                  <strong>{operationalEvent(row.name)}</strong>
                   <span>
-                    {String(row.entity_type).replaceAll("_", " ")} ·{" "}
+                    {operationalEvent(String(row.entity_type).replaceAll("_", " "))} ·{" "}
                     {formatDate(row.created_at, true)}
                   </span>
                 </Link>

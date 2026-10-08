@@ -29,7 +29,7 @@ export default async function SearchPage({
       <PageHeader
         eyebrow="WORKSPACE SEARCH"
         title="Find what you need"
-        description="Search customers, sites, equipment and operational records."
+        description="Search customers, sites, assets, service cases and operational records."
       />
       <SearchInput defaultValue={term} large />
       <section className="panel search-results">

@@ -168,9 +168,9 @@ export function ComplaintActions({ row, profile }: { row: RecordRow; profile: Pr
       secondary
       label={
         next === "Acknowledged"
-          ? "Acknowledge complaint"
+          ? "Acknowledge service case"
           : next === "Closed"
-            ? "Close complaint"
+            ? "Close service case"
             : "Await customer response"
       }
     />

@@ -45,7 +45,7 @@ type Tab = { label: string; entity: string; foreign: string };
 const child = (entity: string, foreign: string, label?: string): Tab => ({
   entity,
   foreign,
-  label: label ?? getEntity(entity).label,
+  label: label ?? (entity === "complaints" ? "Service Cases" : getEntity(entity).label),
 });
 function relatedTabs(entity: string): Tab[] {
   if (entity === "customers")
@@ -120,7 +120,7 @@ function relatedTabs(entity: string): Tab[] {
     ];
   if (entity === "amc_contracts")
     return [
-      child("equipment", "amc_id", "Covered equipment"),
+      child("equipment", "amc_id", "Covered assets"),
       child("amc_equipment", "amc_id", "Coverage register"),
       child("pm_schedules", "amc_id", "Maintenance visits"),
       child("documents", "amc_id"),
@@ -287,7 +287,7 @@ export default async function Detail({
             className="button"
             href={`/complaints/new?customer_id=${row.customer_id}&site_id=${row.site_id}&equipment_id=${id}`}
           >
-            Register complaint
+            Register service case
             <ArrowRight size={15} />
           </Link>
         )}
@@ -520,8 +520,8 @@ async function CustomerSummary({
   const db = await supabase();
   const modules = [
     { entity: "sites", label: "Sites", icon: Building2 },
-    { entity: "equipment", label: "Equipment", icon: AirVent },
-    { entity: "complaints", label: "Open complaints", icon: ClipboardList },
+    { entity: "equipment", label: "Assets", icon: AirVent },
+    { entity: "complaints", label: "Open service cases", icon: ClipboardList },
     { entity: "amc_contracts", label: "AMC contracts", icon: ShieldCheck },
     { entity: "projects", label: "Projects", icon: FileText },
   ].filter((item) => canAccess(profile.role, item.entity));
@@ -638,7 +638,7 @@ async function ServiceReport({ row, lookup }: { row: RecordRow; lookup: Lookup }
           <strong>{lookup.customers?.find((c) => c.id === row.customer_id)?.name}</strong>
         </div>
         <div>
-          <small>Equipment</small>
+          <small>Asset</small>
           <strong>{lookup.equipment?.find((c) => c.id === row.equipment_id)?.name}</strong>
         </div>
         <div>
@@ -702,7 +702,7 @@ async function ServiceReport({ row, lookup }: { row: RecordRow; lookup: Lookup }
           <p>{String(row.customer_confirmation ?? "—")}</p>
         </div>
       </section>
-      <footer>Service completed and recorded in the equipment history. · AIRMECH ONE</footer>
+      <footer>Service completed and recorded in the asset history. · AIRMECH ONE</footer>
     </article>
   );
 }

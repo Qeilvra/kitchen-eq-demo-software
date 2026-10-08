@@ -71,10 +71,10 @@ export function canAccess(role: Role, entity: string, write = false): boolean {
     : ["work_order_readings", "work_order_parts", "documents"].includes(entity);
 }
 export const roleLabels: Record<Role, string> = {
-  super_admin: "Super Admin",
-  management: "Management",
-  sales_admin: "Sales / Admin",
-  service_manager: "Service Manager",
+  super_admin: "System Administrator",
+  management: "Operations Management",
+  sales_admin: "Commercial / Admin",
+  service_manager: "Service Operations Manager",
   engineer: "Field Engineer",
 };
 export function quotationTotals(

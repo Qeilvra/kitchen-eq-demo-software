@@ -1,3 +1,4 @@
+import { columnLabels } from "@/lib/company";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -17,7 +18,7 @@ export function Badge({ value }: { value: string | number | boolean | null | und
     ? "danger"
     : /Completed|Resolved|Active|Approved|Available|Warranty|Covered/.test(text)
       ? "success"
-      : /Pending|Waiting|Sent|Due|Expiring|Follow-Up|Leave/.test(text)
+      : /Pending|Waiting|Sent|Due|Expiring|Follow-Up|Leave|Busy/.test(text)
         ? "warning"
         : /Progress|Assigned|Travelling|On Site|New/.test(text)
           ? "info"
@@ -101,7 +102,9 @@ export function RecordTable({
               <th>{meta.singular}</th>
               {columns.map((key) => (
                 <th key={key}>
-                  {meta.fields.find((f) => f.key === key)?.label ?? key.replaceAll("_", " ")}
+                  {columnLabels[key] ??
+                    meta.fields.find((f) => f.key === key)?.label ??
+                    key.replaceAll("_", " ")}
                 </th>
               ))}
               <th>Status</th>
