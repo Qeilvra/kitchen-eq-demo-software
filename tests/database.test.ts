@@ -25,6 +25,7 @@ test("PostgreSQL migration, relational seed, RLS and complete sales/service/PM w
  grant select,insert,delete on storage.objects to authenticated;`);
     const migration = await readFile("supabase/migrations/001_airmech.sql", "utf8");
     await db.exec(migration.replace("create extension if not exists pgcrypto;", ""));
+    await db.exec(await readFile("supabase/migrations/002_customer_activity.sql", "utf8"));
     const profiles: Record<string, string> = {};
     await db.query("insert into public.tenants values($1,'AIRMECH ONE Demo',true)", [DEMO_TENANT]);
     for (let i = 0; i < accounts.length; i++) {

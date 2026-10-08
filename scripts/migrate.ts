@@ -1,14 +1,31 @@
 import { Client } from "pg";
 import { readdir, readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { DEMO_PROJECT } from "./demo-data";
 const connectionString = process.env.SUPABASE_DB_URL;
 if (!connectionString)
   throw new Error("Set SUPABASE_DB_URL in .env.local. No database changes were made.");
 const url = new URL(connectionString);
+if (
+  process.env.DEMO_PROJECT_REF !== DEMO_PROJECT ||
+  (!url.hostname.includes(DEMO_PROJECT) && !decodeURIComponent(url.username).includes(DEMO_PROJECT))
+)
+  throw new Error("The database target does not match the dedicated AIRMECH demo project.");
 if (!["postgres:", "postgresql:"].includes(url.protocol))
   throw new Error("Use a Supabase PostgreSQL connection URL.");
-console.log(`Migration target: ${url.hostname} / ${url.pathname.slice(1)}`);
-const client = new Client({ connectionString, ssl: { rejectUnauthorized: true } });
+console.log("Migration target: configured AIRMECH Supabase project (connection details hidden).");
+const ca = await readFile(
+  process.env.SUPABASE_DB_CA_FILE || "supabase/certs/prod-ca-2021.crt",
+  "utf8",
+);
+// pg's connection-string SSL options otherwise replace the explicit verified TLS configuration.
+for (const parameter of ["sslmode", "sslcert", "sslkey", "sslrootcert"])
+  url.searchParams.delete(parameter);
+const client = new Client({
+  connectionString: url.toString(),
+  ssl: { rejectUnauthorized: true, ca },
+  connectionTimeoutMillis: 20000,
+});
 await client.connect();
 try {
   await client.query(

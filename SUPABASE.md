@@ -19,6 +19,8 @@ Never publish a service role key, DB password or connection string. Do not paste
 
 ## Schema
 
+Migrations use verified TLS with the public Supabase CA in `supabase/certs/prod-ca-2021.crt`. Set optional `SUPABASE_DB_CA_FILE` to use another trusted certificate. Connection-string SSL options are normalized so they cannot override certificate verification. Use the actual PostgreSQL database password in `SUPABASE_DB_URL`, with reserved URL characters percent-encoded; API keys are separate credentials.
+
 Run `pnpm db:migrate`. The migration creates tenants, roles/profiles and 25 business tables. Foreign keys include tenant ownership, preventing cross-tenant associations. Link validation checks the customer/site/asset and linked sales/service record relationships. Indexed foreign keys and tenant/status/date indexes support record navigation and lists.
 
 The migration runner records checksums in `airmech_meta.migrations`; it rejects editing an already-applied migration. Use a new numbered migration for subsequent changes. If using the Supabase SQL editor to apply the SQL manually, do not then run the migration runner against those same untracked objects; choose one application method and record it.

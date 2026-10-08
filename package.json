@@ -2,6 +2,7 @@
   "name": "airmech-one",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.18.3",
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0",
