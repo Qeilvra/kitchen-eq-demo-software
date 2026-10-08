@@ -26,6 +26,7 @@ test("PostgreSQL migration, relational seed, RLS and complete sales/service/PM w
     const migration = await readFile("supabase/migrations/001_airmech.sql", "utf8");
     await db.exec(migration.replace("create extension if not exists pgcrypto;", ""));
     await db.exec(await readFile("supabase/migrations/002_customer_activity.sql", "utf8"));
+    await db.exec(await readFile("supabase/migrations/003_engineer_references.sql", "utf8"));
     const profiles: Record<string, string> = {};
     await db.query("insert into public.tenants values($1,'AIRMECH ONE Demo',true)", [DEMO_TENANT]);
     for (let i = 0; i < accounts.length; i++) {
@@ -141,6 +142,12 @@ test("PostgreSQL migration, relational seed, RLS and complete sales/service/PM w
       ])
     ).rows[0].id;
     await login("engineer");
+    assert.equal((await db.query("select * from public.am_engineer_options()")).rows.length, 1);
+    assert.equal(
+      (await db.query("select * from public.am_engineer_options(array[$1::uuid])", [seedId(4, 1)]))
+        .rows.length,
+      0,
+    );
     await assert.rejects(
       db.query("select public.am_set_role($1,'super_admin')", [profiles.engineer]),
       /permission/,

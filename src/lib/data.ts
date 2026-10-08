@@ -118,6 +118,13 @@ export async function lookups(refs: string[], ids?: Record<string, string[]>): P
   const result: Lookup = {};
   await Promise.all(
     [...new Set(refs)].map(async (ref) => {
+      if (ref === "engineers") {
+        const { data, error } = await db.rpc("am_engineer_options", {
+          targets: ids?.engineers?.length ? [...new Set(ids.engineers)] : null,
+        });
+        if (!error) result.engineers = data ?? [];
+        return;
+      }
       const fields =
         ref === "profiles"
           ? "id,full_name"

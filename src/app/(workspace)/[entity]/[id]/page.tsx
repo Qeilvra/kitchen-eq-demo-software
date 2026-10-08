@@ -651,6 +651,12 @@ async function ServiceReport({ row, lookup }: { row: RecordRow; lookup: Lookup }
             {lookup.work_orders?.find((c) => c.id === row.work_order_id)?.code}
           </Link>
         </div>
+        <div>
+          <small>Engineer</small>
+          <strong>
+            {lookup.engineers?.find((engineer) => engineer.id === row.engineer_id)?.name ?? "—"}
+          </strong>
+        </div>
       </div>
       {[
         ["Reported issue", "reported_issue"],
