@@ -2,7 +2,40 @@ import { login } from "../actions";
 import { Brand } from "@/components/brand";
 import { Submit } from "@/components/ui";
 import { Notice } from "@/components/records";
-import { ArrowRight, ShieldCheck, Wind, Building2, Layers3 } from "lucide-react";
+import {
+  ArrowRight,
+  ShieldCheck,
+  Mail,
+  LockKeyhole,
+  UsersRound,
+  ClipboardList,
+  CalendarDays,
+  ChartNoAxesCombined,
+} from "lucide-react";
+import styles from "./page.module.css";
+
+const features = [
+  {
+    icon: UsersRound,
+    title: "Manage customers",
+    description: "All client information in one place.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Track service requests",
+    description: "From enquiry to resolution.",
+  },
+  {
+    icon: CalendarDays,
+    title: "Coordinate field operations",
+    description: "Engineers, schedules and work orders.",
+  },
+  {
+    icon: ChartNoAxesCombined,
+    title: "Complete visibility",
+    description: "Projects, AMC, complaints and reports.",
+  },
+];
 export default async function Login({
   searchParams,
 }: {
@@ -10,101 +43,79 @@ export default async function Login({
 }) {
   const { error } = await searchParams;
   return (
-    <div className="login-page">
-      <section className="login-story">
+    <div className={styles.scene}>
+      <header className={styles.header}>
         <Brand />
-        <div className="login-story-content">
-          <span className="eyebrow light">ONE CONNECTED WORKSPACE</span>
-          <h1>
-            From the first call.
-            <br />
-            To the final service.
-          </h1>
-          <p>
-            Bring your customers, commercial pipeline and field operations together. Every asset.
-            Every visit. Every detail.
-          </p>
-          <div className="login-feature">
-            <Building2 size={21} />
-            <div>
-              <strong>Your customers, in full view</strong>
-              <span>People, sites and service history in one place.</span>
-            </div>
+      </header>
+      <main className={styles.centerStage}>
+        <section className={styles.card} aria-labelledby="login-heading">
+          <div className={styles.introduction}>
+            <span className={styles.eyebrow}>WELCOME BACK</span>
+            <h1 id="login-heading">Sign in to Airmech One</h1>
+            <p>
+              Access your projects, service requests, teams and customer information — all in one
+              place.
+            </p>
           </div>
-          <div className="login-feature">
-            <Layers3 size={21} />
-            <div>
-              <strong>A workflow that stays connected</strong>
-              <span>Enquiry to quotation. Dispatch to service report.</span>
-            </div>
+          <div className={styles.notice}>
+            <Notice
+              error={
+                error === "profile"
+                  ? "Your account does not have a workspace profile. Ask your administrator to activate it."
+                  : error
+              }
+            />
           </div>
-          <div className="login-feature">
-            <Wind size={21} />
-            <div>
-              <strong>Built for work in the field</strong>
-              <span>Purpose-designed tools for your engineers.</span>
-            </div>
-          </div>
-        </div>
-        <div className="login-story-footer">
-          HVAC & MEP OPERATIONS <span>OMAN</span>
-        </div>
-      </section>
-      <section className="login-form-side">
-        <div className="mobile-login-brand">
-          <Brand />
-        </div>
-        <div className="login-card">
-          <span className="eyebrow">WELCOME TO AIRMECH ONE</span>
-          <h2>Good to have you back.</h2>
-          <p>Sign in to your operations workspace.</p>
-          <Notice
-            error={
-              error === "profile"
-                ? "Your account does not have a workspace profile. Ask your administrator to activate it."
-                : error
-            }
-          />
-          <form action={login}>
+          <form action={login} className={styles.form}>
             <label>
               <span>Email address</span>
-              <input
-                name="email"
-                type="email"
-                placeholder="you@company.com"
-                required
-                autoComplete="username"
-              />
+              <span className={styles.inputShell}>
+                <Mail size={20} aria-hidden="true" />
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="you@company.com"
+                  required
+                  autoComplete="username"
+                />
+              </span>
             </label>
             <label>
               <span>Password</span>
-              <input
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-                required
-                autoComplete="current-password"
-              />
+              <span className={styles.inputShell}>
+                <LockKeyhole size={20} aria-hidden="true" />
+                <input
+                  name="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  required
+                  autoComplete="current-password"
+                />
+              </span>
             </label>
-            <Submit className="button login-submit">
-              Sign in to workspace <ArrowRight size={17} />
+            <Submit className={`button ${styles.submit}`}>
+              Sign in to workspace <ArrowRight size={21} aria-hidden="true" />
             </Submit>
           </form>
-          <div className="login-assurance">
-            <ShieldCheck size={16} />
+          <div className={styles.security}>
+            <ShieldCheck size={19} aria-hidden="true" />
             <span>Secure access. Role-based permissions.</span>
           </div>
-          <div className="login-demo-note">
-            <strong>Client demonstration workspace</strong>
-            <p>
-              Use your preconfigured demo account. Your administrator provides login credentials.
-            </p>
+        </section>
+      </main>
+      <footer className={styles.featureStrip} aria-label="Workspace capabilities">
+        {features.map(({ icon: Icon, title, description }) => (
+          <div className={styles.feature} key={title}>
+            <span className={styles.featureIcon}>
+              <Icon size={25} aria-hidden="true" />
+            </span>
+            <div>
+              <strong>{title}</strong>
+              <p>{description}</p>
+            </div>
           </div>
-        </div>
-        <footer>
-          AIRMECH ONE <span>·</span> Built by Qeilvra
-        </footer>
-      </section>
+        ))}
+      </footer>
     </div>
   );
 }
