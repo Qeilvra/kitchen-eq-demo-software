@@ -32,6 +32,7 @@ export default async function Settings({
       <PageHeader
         eyebrow="YOUR WORKSPACE"
         title="Admin & account"
+        module="admin"
         description="Administration, account access and engineering operations context."
       />
       <Notice {...query} />

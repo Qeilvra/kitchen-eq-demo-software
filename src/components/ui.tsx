@@ -2,7 +2,6 @@
 import { useRef, useState, useEffect, useId } from "react";
 import { useFormStatus } from "react-dom";
 import {
-  ArrowUpRight,
   Search,
   Bell,
   ChevronDown,
@@ -115,7 +114,7 @@ export function SearchInput({
         placeholder="Search customers, assets, service cases, projects…"
       />
       <button type="submit" className="search-submit" aria-label="Search">
-        <ArrowUpRight size={16} />
+        <span>Go</span>
       </button>
     </form>
   );
@@ -187,4 +186,83 @@ export function Chevron() {
 }
 export function FilterIcon() {
   return <SlidersHorizontal size={15} />;
+}
+export function FilterSheet({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const panel = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const id = useId();
+  useEffect(() => {
+    if (!open) return;
+    const oldOverflow = document.body.style.overflow;
+    const focusTarget = trigger.current;
+    document.body.style.overflow = "hidden";
+    panel.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    return () => {
+      document.body.style.overflow = oldOverflow;
+      focusTarget?.focus();
+    };
+  }, [open]);
+  return (
+    <>
+      <button
+        ref={trigger}
+        type="button"
+        className="button secondary mobile-filter-toggle"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={() => setOpen(true)}
+      >
+        <SlidersHorizontal size={18} />
+        Filters
+      </button>
+      <div
+        id={id}
+        ref={panel}
+        className="filter-options"
+        data-open={open}
+        role={open ? "dialog" : undefined}
+        aria-modal={open ? true : undefined}
+        aria-label={open ? "Filter records" : undefined}
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          const button = target.closest("button");
+          if (button?.type === "submit" || target.closest("a")) setOpen(false);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") setOpen(false);
+          if (open && event.key === "Tab") {
+            const controls = [
+              ...(panel.current?.querySelectorAll<HTMLElement>("button, select, a, input") ?? []),
+            ];
+            const first = controls[0],
+              last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first?.focus();
+            }
+          }
+        }}
+      >
+        <div className="filter-sheet-heading">
+          <div>
+            <span className="eyebrow">RECORD FILTERS</span>
+            <h2>Refine your view</h2>
+          </div>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label="Close filters"
+            onClick={() => setOpen(false)}
+          >
+            <X size={22} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </>
+  );
 }

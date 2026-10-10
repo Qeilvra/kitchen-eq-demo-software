@@ -4,7 +4,6 @@ import {
   ArrowUpRight,
   CalendarClock,
   ClipboardList,
-  MessageSquare,
   FileText,
   BriefcaseBusiness,
   ShieldCheck,
@@ -13,7 +12,7 @@ import {
   Clock3,
   TriangleAlert,
   AirVent,
-  UserRound,
+  Users,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { canAccess, type Profile } from "@/lib/domain";
@@ -23,6 +22,10 @@ import { initials } from "./shell";
 import type { Lookup } from "@/lib/data";
 import { lookups } from "@/lib/data";
 import { MetricCard } from "./design-system";
+import { PageHero, PanelHeader } from "./operations-ui";
+import { overviewSignals } from "./operational-insights";
+import { PipelineChart, StatusDonut, TrendChart } from "./operations-charts";
+import { chartColors, statusColor } from "./chart-data";
 type Summary = {
   enquiries: number;
   quotations: number;
@@ -43,12 +46,6 @@ export async function Dashboard({ profile }: { profile: Profile }) {
   const db = await supabase();
   const renewalCutoff = new Date();
   renewalCutoff.setDate(renewalCutoff.getDate() + 30);
-  const today = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Muscat",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
   await db.rpc("am_sync_notifications");
   const [
     { data: summary, error },
@@ -168,14 +165,15 @@ export async function Dashboard({ profile }: { profile: Profile }) {
     sites: siteIds,
     engineers: engineerIds,
   });
+  const signals = await overviewSignals(profile);
   const metrics = [
     {
-      label: "Open enquiries",
-      value: s.enquiries,
-      href: "/enquiries",
-      icon: MessageSquare,
-      entity: "enquiries",
-      context: "New opportunities",
+      label: "Total customers",
+      value: signals.customers,
+      href: "/customers",
+      icon: Users,
+      entity: "customers",
+      context: "Connected customer relationships",
       color: "blue",
     },
     {
@@ -197,16 +195,7 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       color: "red",
     },
     {
-      label: "Engineer jobs",
-      value: s.jobs,
-      href: "/work_orders",
-      icon: UserRound,
-      entity: "work_orders",
-      context: "Scheduled field jobs today",
-      color: "blue",
-    },
-    {
-      label: "AMC due",
+      label: "AMC / PM due",
       value: amcDue.count ?? 0,
       href: "/pm_schedules",
       icon: CalendarClock,
@@ -215,16 +204,19 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       color: "teal",
     },
     {
-      label: "Warranty cases",
-      value: warrantyCases.count ?? 0,
-      href: "/complaints",
-      icon: ShieldCheck,
-      entity: "complaints",
-      context: "Open warranty service cases",
-      color: "amber",
+      label: "Total assets",
+      value: signals.assets,
+      href: "/equipment",
+      icon: AirVent,
+      entity: "equipment",
+      context: "Registered engineering assets",
+      color: "blue",
     },
   ].filter((m) => canAccess(profile.role, m.entity));
-  const engineerJobs = new Map<string, { name: string; count: number; status: string }>();
+  const engineerJobs = new Map<
+    string,
+    { name: string; count: number; status: string; site: string }
+  >();
   (jobs ?? []).forEach((job) => {
     const eng = lookup.engineers?.find((e) => e.id === job.engineer_id);
     if (!eng) return;
@@ -233,42 +225,33 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       name: eng.name,
       count: (previous?.count ?? 0) + 1,
       status: eng.status ?? "Assigned",
+      site: lookup.sites?.find((site) => site.id === job.site_id)?.name ?? "Site not recorded",
     });
   });
   return (
     <div className="airmech-overview">
-      <section className="dashboard-welcome">
-        <div>
-          <span className="eyebrow light">ENGINEERING & SERVICE OPERATIONS</span>
-          <h1>Welcome back, {profile.full_name.split(" ")[0]}.</h1>
-          <p>Building services, engineering, maintenance, controls and marine support.</p>
-        </div>
-        <div className="welcome-date">
-          <span>
-            {new Intl.DateTimeFormat("en-GB", {
-              timeZone: "Asia/Muscat",
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }).format(new Date())}
-          </span>
-          <small>
-            <MapPin size={13} />
-            Muscat, Oman <span>UTC +4</span>
-          </small>
-        </div>
-        <div className="welcome-lines" aria-hidden="true">
-          <svg viewBox="0 0 500 160">
-            <path
-              d="M20 150 115 75l32 28 48-79 35 49 27-14 60 64 32-38 55 65M0 150h500M400 150V80h20v70m-17-70V65h14v15m-8-15V42m-42 108V96h22v54"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </svg>
-        </div>
-      </section>
+      <PageHero
+        title="Operations Overview"
+        description="Live view of customers, projects, service operations and team activity across all sites."
+        aside={
+          <div className="welcome-date">
+            <span>
+              {new Intl.DateTimeFormat("en-GB", {
+                timeZone: "Asia/Muscat",
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              }).format(new Date())}
+            </span>
+            <small>
+              <MapPin size={13} />
+              Muscat, Oman <span>UTC +4</span>
+            </small>
+            <p>Welcome back, {profile.full_name.split(" ")[0]}.</p>
+          </div>
+        }
+      />
       <div className="kpi-grid">
         {metrics.map(({ label, value, href, icon, context, color }) => (
           <Link key={label} href={href} className="metric-link">
@@ -309,39 +292,32 @@ export async function Dashboard({ profile }: { profile: Profile }) {
           <section className="panel commercial-pipeline">
             <PanelTitle
               title="Commercial Pipeline"
+              description="From enquiry to delivered project."
               href="/reports?report=pipeline"
               subtitle="View pipeline"
             />
-            <div className="pipeline-stages">
-              {[
+            <PipelineChart
+              stages={[
                 {
                   label: "Enquiries",
-                  count: enquiryTotal.count ?? 0,
+                  value: enquiryTotal.count ?? 0,
                   href: "/enquiries",
-                  icon: MessageSquare,
+                  color: chartColors.blue,
                 },
                 {
                   label: "Quotations",
-                  count: quotationTotal.count ?? 0,
+                  value: quotationTotal.count ?? 0,
                   href: "/quotations",
-                  icon: FileText,
+                  color: chartColors.cyan,
                 },
                 {
                   label: "Won projects",
-                  count: wonProjects.count ?? 0,
+                  value: wonProjects.count ?? 0,
                   href: "/projects",
-                  icon: BriefcaseBusiness,
+                  color: chartColors.green,
                 },
-              ].map(({ label, count, href, icon: Icon }) => (
-                <Link key={href} href={href}>
-                  <span>
-                    <Icon size={24} />
-                  </span>
-                  <strong>{count}</strong>
-                  <small>{label}</small>
-                </Link>
-              ))}
-            </div>
+              ]}
+            />
             <p className="pipeline-note">Enquiry → Quotation → Approved → Project</p>
           </section>
         )}
@@ -349,9 +325,26 @@ export async function Dashboard({ profile }: { profile: Profile }) {
           <section className="panel engineer-panel">
             <PanelTitle
               title="Engineer Dispatch"
+              description="Availability and scheduled site assignments."
               href="/dispatch"
               subtitle={`${s.jobs} jobs today`}
             />
+            <div className="engineer-status-counters">
+              {["On Site", "Travelling", "Available", "Busy"].map((status) => (
+                <div key={status} style={{ borderTopColor: statusColor(status) }}>
+                  <span>{status}</span>
+                  <strong>
+                    {
+                      signals.engineerStatuses.filter((engineer) => engineer.status === status)
+                        .length
+                    }
+                  </strong>
+                </div>
+              ))}
+            </div>
+            {signals.teamLimited && (
+              <p className="chart-footnote padded">First 1,000 field-team records.</p>
+            )}
             <div className="engineer-list">
               {[...engineerJobs.entries()].slice(0, 4).map(([id, e], i) => (
                 <Link href={`/engineers/${id}`} key={id} className="engineer-row">
@@ -363,6 +356,9 @@ export async function Dashboard({ profile }: { profile: Profile }) {
                     <span>
                       {e.count} upcoming {e.count === 1 ? "job" : "jobs"}
                     </span>
+                    <small>
+                      <MapPin size={13} /> {e.site}
+                    </small>
                   </div>
                   <Badge value={e.status} />
                 </Link>
@@ -379,8 +375,19 @@ export async function Dashboard({ profile }: { profile: Profile }) {
         )}
         {canAccess(profile.role, "complaints") && (
           <section className="panel complaint-panel">
-            <PanelTitle title="Service Desk" href="/complaints" />
-            <ComplaintChart statuses={s.complaint_status} />
+            <PanelTitle
+              title="Service Desk"
+              description="Live status of open service operations."
+              href="/complaints"
+            />
+            <div className="chart-panel-body">
+              <StatusDonut
+                data={Object.entries(s.complaint_status)
+                  .filter(([status]) => !["Resolved", "Closed"].includes(status))
+                  .map(([status, value]) => ({ label: status, value, color: statusColor(status) }))}
+                label="Open cases"
+              />
+            </div>
           </section>
         )}
       </div>
@@ -427,19 +434,48 @@ export async function Dashboard({ profile }: { profile: Profile }) {
       </div>
       <div className="dashboard-bottom-grid">
         {canAccess(profile.role, "work_orders") && (
-          <section className="panel service-activity-panel">
-            <PanelTitle title="Service Completion Trend" subtitle="Last 30 days" />
-            <div className="chart-legend">
-              <span>
-                <i className="legend-blue" />
-                Scheduled jobs
-              </span>
-              <span>
-                <i className="legend-teal" />
-                Completed jobs
-              </span>
+          <section className="panel attention-panel">
+            <PanelTitle title="Work Orders Needing Attention" href="/work_orders" />
+            <div className="attention-list">
+              {(jobs ?? []).map((job) => (
+                <Link key={job.id} href={`/work_orders/${job.id}`}>
+                  <span className="record-code">{job.code}</span>
+                  <div>
+                    <strong>{job.name}</strong>
+                    <small>
+                      {lookup.customers?.find((customer) => customer.id === job.customer_id)?.name}
+                    </small>
+                  </div>
+                  <Badge value={job.status} />
+                  <time>{formatDate(job.scheduled_at, true)}</time>
+                  <ArrowUpRight size={16} />
+                </Link>
+              ))}
+              {!jobs?.length && (
+                <Empty
+                  title="No pending work orders"
+                  detail="Scheduled and active jobs will appear here."
+                />
+              )}
             </div>
-            <ActivityChart rows={s.work_activity.filter((row) => row.day <= today)} />
+          </section>
+        )}
+        {canAccess(profile.role, "work_orders") && (
+          <section className="panel service-activity-panel">
+            <PanelTitle title="Service Trend" subtitle="Last 6 months" />
+            <div className="chart-panel-body">
+              <TrendChart
+                data={signals.trend}
+                series={[
+                  { label: "New cases", color: chartColors.blue, kind: "bar" },
+                  { label: "Resolved cases", color: chartColors.green, kind: "bar" },
+                  { label: "Avg. resolution", color: chartColors.amber, kind: "line", unit: "hrs" },
+                ]}
+              />
+              {signals.limited && (
+                <p className="chart-footnote">Latest 1,000 service records in the period.</p>
+              )}
+            </div>
             <div className="chart-footer">
               <span>
                 <strong>{s.completed}</strong> completed in the last 7 days
@@ -615,23 +651,28 @@ export function PanelTitle({
   title,
   href,
   subtitle,
+  description,
 }: {
   title: string;
   href?: string;
   subtitle?: string;
+  description?: string;
 }) {
   return (
-    <div className="panel-heading">
-      <h2>{title}</h2>
-      {href ? (
-        <Link className="text-link" href={href}>
-          {subtitle ?? "View all"}
-          <ArrowRight size={13} />
-        </Link>
-      ) : subtitle ? (
-        <span className="muted">{subtitle}</span>
-      ) : null}
-    </div>
+    <PanelHeader
+      title={title}
+      description={description}
+      action={
+        href ? (
+          <Link className="text-link" href={href}>
+            {subtitle ?? "View all"}
+            <ArrowRight size={13} />
+          </Link>
+        ) : subtitle ? (
+          <span className="muted">{subtitle}</span>
+        ) : undefined
+      }
+    />
   );
 }
 function MiniRecords({
@@ -684,123 +725,6 @@ function MiniRecords({
         </Link>
       ))}
       {rows.length === 0 && <Empty title="Nothing pending" detail="You’re up to date." />}
-    </div>
-  );
-}
-function ActivityChart({ rows }: { rows: Summary["work_activity"] }) {
-  if (!rows.length)
-    return (
-      <Empty title="No service activity" detail="Scheduled and completed jobs will appear here." />
-    );
-  const max = Math.max(4, ...rows.map((r) => r.jobs));
-  const width = 400,
-    height = 156;
-  const point = (v: number, i: number) =>
-    `${38 + (i * (width - 50)) / Math.max(1, rows.length - 1)},${height - 10 - (v * (height - 32)) / max}`;
-  const path = (key: "jobs" | "completed") =>
-    rows.map((r, i) => `${i ? "L" : "M"}${point(r[key], i)}`).join(" ");
-  return (
-    <div className="activity-chart">
-      <svg
-        viewBox={`0 0 ${width} ${height + 22}`}
-        role="img"
-        aria-label="Scheduled and completed work orders by date"
-      >
-        <defs>
-          <linearGradient id="activity-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#2f6f8f" stopOpacity=".12" />
-            <stop offset="1" stopColor="#2f6f8f" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {[0, 1, 2, 3, 4].map((i) => (
-          <g key={i}>
-            <line
-              x1="38"
-              x2={width - 8}
-              y1={height - 10 - (i * (height - 32)) / 4}
-              y2={height - 10 - (i * (height - 32)) / 4}
-              stroke="#e5ecef"
-            />
-            <text x="24" y={height - 6 - (i * (height - 32)) / 4} textAnchor="end">
-              {Math.round((max * i) / 4)}
-            </text>
-          </g>
-        ))}
-        <path
-          d={`${path("jobs")} L${point(0, rows.length - 1)} L${point(0, 0)} Z`}
-          fill="url(#activity-fill)"
-        />
-        <path d={path("jobs")} fill="none" stroke="#2f6f8f" strokeWidth="2" />
-        <path d={path("completed")} fill="none" stroke="#0f7484" strokeWidth="2" />
-        {[0, Math.floor((rows.length - 1) / 2), rows.length - 1]
-          .filter((v, i, a) => a.indexOf(v) === i)
-          .map((i) => (
-            <text
-              key={i}
-              x={38 + (i * (width - 50)) / Math.max(1, rows.length - 1)}
-              y={height + 14}
-              textAnchor="middle"
-            >
-              {formatDate(rows[i].day).slice(0, 6)}
-            </text>
-          ))}
-      </svg>
-    </div>
-  );
-}
-function ComplaintChart({ statuses }: { statuses: Record<string, number> }) {
-  const colors = [
-    "#2f6f8f",
-    "#3ca6b1",
-    "#bc8039",
-    "#e0b273",
-    "#246b56",
-    "#a33b3b",
-    "#77949d",
-    "#b5c9ce",
-  ];
-  const entries = Object.entries(statuses);
-  const total = entries.reduce((a, [, n]) => a + n, 0);
-  let offset = 0;
-  return (
-    <div className="complaint-chart">
-      <div className="donut">
-        <svg viewBox="0 0 120 120" role="img" aria-label={`${total} complaints grouped by status`}>
-          <circle cx="60" cy="60" r="46" fill="none" stroke="#edf2f3" strokeWidth="17" />
-          {entries.map(([name, n], i) => {
-            const length = total ? (n / total) * 289.03 : 0;
-            const previous = offset;
-            offset += length;
-            return (
-              <circle
-                key={name}
-                cx="60"
-                cy="60"
-                r="46"
-                fill="none"
-                stroke={colors[i % colors.length]}
-                strokeWidth="17"
-                strokeDasharray={`${Math.max(0, length - 2)} ${289.03 - length + 2}`}
-                strokeDashoffset={-previous}
-                transform="rotate(-90 60 60)"
-              />
-            );
-          })}
-        </svg>
-        <div>
-          <span>Total</span>
-          <strong>{total}</strong>
-        </div>
-      </div>
-      <div className="donut-legend">
-        {entries.map(([name, n], i) => (
-          <Link href={`/complaints?status=${encodeURIComponent(name)}`} key={name}>
-            <i style={{ background: colors[i % colors.length] }} />
-            <span>{name}</span>
-            <strong>{n}</strong>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }

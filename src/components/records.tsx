@@ -16,15 +16,16 @@ import { getEntity } from "@/lib/catalog";
 import type { RecordRow } from "@/lib/domain";
 import type { Lookup } from "@/lib/data";
 import { recordLayouts, type RecordColumn } from "./record-layout";
+import { FilterSheet } from "./ui";
 export function Badge({ value }: { value: string | number | boolean | null | undefined }) {
   const text = String(value ?? "—");
   const style = /Emergency|High|Overdue|Expired|Rejected|Cancelled|Out of Service/.test(text)
     ? "danger"
     : /Completed|Resolved|Active|Approved|Available|Warranty|Covered/.test(text)
       ? "success"
-      : /Pending|Waiting|Sent|Due|Expiring|Follow-Up|Leave|Busy/.test(text)
+      : /Pending|Waiting|Sent|Due|Expiring|Follow-Up|Leave|Busy|Travelling/.test(text)
         ? "warning"
-        : /Progress|Assigned|Travelling|On Site|New/.test(text)
+        : /Progress|Assigned|On Site|New/.test(text)
           ? "info"
           : "neutral";
   return (
@@ -48,6 +49,14 @@ export function formatDate(value: unknown, withTime = false) {
 export function display(entity: string, key: string, row: RecordRow, lookup: Lookup) {
   const field = getEntity(entity).fields.find((f) => f.key === key);
   const value = row[key];
+  if (key === "quotation_amount")
+    return typeof value === "number" ? (
+      <span className="money-value">
+        OMR {value.toLocaleString("en-OM", { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
+      </span>
+    ) : (
+      "—"
+    );
   if (key === "engineer_id" && !field?.ref) {
     const engineer = lookup.engineers?.find((record) => record.id === value);
     return engineer ? (
@@ -108,6 +117,12 @@ export function RecordTable({
       />
     );
   const label = (key: string) =>
+    (
+      ({ engineer_id: "Engineer", quotation_amount: "Amount", mime_type: "File type" }) as Record<
+        string,
+        string
+      >
+    )[key] ??
     columnLabels[key] ??
     meta.fields.find((field) => field.key === key)?.label ??
     key.replaceAll("_", " ");
@@ -117,6 +132,10 @@ export function RecordTable({
   const plainValue = (key: string, row: RecordRow) => {
     const field = meta.fields.find((field) => field.key === key);
     const value = row[key];
+    if (key === "quotation_amount")
+      return typeof value === "number"
+        ? `OMR ${value.toLocaleString("en-OM", { minimumFractionDigits: 3, maximumFractionDigits: 3 })}`
+        : "—";
     if (field?.ref) return lookup[field.ref]?.find((record) => record.id === value)?.name ?? "—";
     if (key === "engineer_id")
       return (
@@ -132,7 +151,8 @@ export function RecordTable({
     <div className="record-cell">
       {column.keys.map((key, index) => (
         <div key={key} className={index ? "cell-secondary" : "cell-primary"}>
-          {(key.endsWith("_count") || ["active_projects", "open_complaints"].includes(key)) &&
+          {(key.endsWith("_count") ||
+            ["active_projects", "open_complaints", "valid_until"].includes(key)) &&
           column.keys.length > 1 ? (
             <span className="cell-label">{label(key)}: </span>
           ) : null}
@@ -277,14 +297,16 @@ export function PageHeader({
   title,
   description,
   action,
+  module,
 }: {
   eyebrow?: string;
   title: string;
   description?: string;
   action?: React.ReactNode;
+  module?: string;
 }) {
   return (
-    <div className="page-header">
+    <div className={`page-header${module ? ` module-header module-header-${module}` : ""}`}>
       <div>
         <div className="page-context">
           <Link href="/dashboard" aria-label="Overview">
@@ -393,21 +415,25 @@ export function Filters({
           aria-label={`Search ${meta.label}`}
         />
       </label>
-      <select name="status" defaultValue={status} aria-label="Filter by status">
-        <option value="">All statuses</option>
-        {meta.statuses.map((s) => (
-          <option key={s}>{s}</option>
-        ))}
-      </select>
-      <button className="button secondary small">Apply filters</button>
-      {(q || status) && (
-        <Link
-          href={`/${entity}${foreign && parent ? `?${new URLSearchParams({ foreign, parent })}` : ""}`}
-          className="text-link"
-        >
-          Clear
-        </Link>
-      )}
+      <FilterSheet>
+        <select name="status" defaultValue={status} aria-label="Filter by status">
+          <option value="">All statuses</option>
+          {meta.statuses.map((s) => (
+            <option key={s}>{s}</option>
+          ))}
+        </select>
+        <button type="submit" className="button secondary small">
+          Apply filters
+        </button>
+        {(q || status) && (
+          <Link
+            href={`/${entity}${foreign && parent ? `?${new URLSearchParams({ foreign, parent })}` : ""}`}
+            className="text-link"
+          >
+            Clear
+          </Link>
+        )}
+      </FilterSheet>
     </form>
   );
 }

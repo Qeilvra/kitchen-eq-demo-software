@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import type { RecordRow } from "@/lib/domain";
 import { derivedStatus } from "./records";
+import { dateKey } from "./chart-data";
 
 type Metric = { label: string; value: number; context: string; icon: LucideIcon; tone?: string };
 
@@ -51,11 +52,15 @@ export function ModuleSummary({
   rows,
   count,
   filtered,
+  maintenance,
+  resolvedToday,
 }: {
   entity: string;
   rows: RecordRow[];
   count: number;
   filtered: boolean;
+  maintenance?: { due: number; overdue: number };
+  resolvedToday?: number;
 }) {
   const today = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Muscat",
@@ -84,7 +89,8 @@ export function ModuleSummary({
         row[key] &&
         String(row[key]).slice(0, 10) >= today &&
         String(row[key]).slice(0, 10) <= soon &&
-        !["Completed", "Cancelled", "Rejected", "Expired"].includes(row.status),
+        !["Completed", "Cancelled", "Rejected", "Expired"].includes(row.status) &&
+        !(key === "valid_until" && row.status === "Approved"),
     ).length;
   const current = "On this page";
   const metric = (
@@ -104,7 +110,7 @@ export function ModuleSummary({
         "Across matching records",
       ),
       metric(
-        "AMC contracts",
+        "Active contracts",
         sum("amc_count"),
         FileText,
         "green",
@@ -121,7 +127,7 @@ export function ModuleSummary({
         "Active projects",
         sum("active_projects"),
         BriefcaseBusiness,
-        "violet",
+        "blue",
         "For customers on this page",
       ),
     ],
@@ -143,7 +149,8 @@ export function ModuleSummary({
     ],
     quotations: [
       metric("Draft", statusCount("Draft"), FileText, "blue"),
-      metric("Sent", statusCount("Sent", "Follow-Up"), Send),
+      metric("Sent", statusCount("Sent"), Send),
+      metric("Follow-up", statusCount("Follow-Up"), CalendarClock, "amber"),
       metric("Approved", statusCount("Approved"), CircleCheck, "green"),
       metric(
         "Expiring soon",
@@ -154,14 +161,28 @@ export function ModuleSummary({
       ),
     ],
     projects: [
-      metric("Active", statusCount("Active"), BriefcaseBusiness, "blue"),
-      metric("On hold", statusCount("On Hold"), Clock3, "amber"),
+      metric("Active projects", statusCount("Active"), BriefcaseBusiness, "blue"),
       metric(
-        "Completing soon",
-        upcoming("target_date"),
+        "On schedule",
+        rows.filter(
+          (row) =>
+            row.target_date &&
+            String(row.target_date) >= today &&
+            !["Completed", "Cancelled", "On Hold"].includes(row.status),
+        ).length,
+        Clock3,
+        "green",
+      ),
+      metric(
+        "At risk",
+        rows.filter(
+          (row) =>
+            !["Completed", "Cancelled"].includes(row.status) &&
+            (row.status === "On Hold" || (row.target_date && String(row.target_date) < today)),
+        ).length,
         CalendarClock,
-        "violet",
-        "Within 30 days · on this page",
+        "amber",
+        "On hold or past target · this page",
       ),
       metric("Completed", statusCount("Completed"), CircleCheck, "green"),
     ],
@@ -173,22 +194,33 @@ export function ModuleSummary({
         "blue",
       ),
       metric(
-        "High priority",
+        "Emergency",
         rows.filter(
-          (row) =>
-            ["High", "Emergency"].includes(String(row.priority)) &&
-            !["Resolved", "Closed"].includes(row.status),
+          (row) => row.priority === "Emergency" && !["Resolved", "Closed"].includes(row.status),
         ).length,
         TriangleAlert,
         "red",
       ),
       metric(
-        "Assigned",
-        rows.filter((row) => row.engineer_id && !["Resolved", "Closed"].includes(row.status))
-          .length,
-        UserRound,
+        "High priority",
+        rows.filter(
+          (row) => row.priority === "High" && !["Resolved", "Closed"].includes(row.status),
+        ).length,
+        TriangleAlert,
+        "red",
       ),
       metric("Waiting parts", statusCount("Waiting Parts"), Clock3, "amber"),
+      ...(resolvedToday !== undefined
+        ? [
+            metric(
+              "Resolved today",
+              resolvedToday,
+              CircleCheck,
+              "green",
+              "Workspace · linked service jobs",
+            ),
+          ]
+        : []),
     ],
     equipment: [
       metric(
@@ -209,19 +241,36 @@ export function ModuleSummary({
         ShieldCheck,
         "green",
       ),
-      metric("AMC linked", rows.filter((row) => row.amc_id).length, FileText),
+      metric(
+        rows.every((row) => typeof row.active_amc === "boolean") ? "Active AMC" : "AMC linked",
+        rows.filter((row) => (typeof row.active_amc === "boolean" ? row.active_amc : row.amc_id))
+          .length,
+        FileText,
+      ),
       metric("Service due", due("next_service"), CalendarClock, "amber"),
     ],
     engineers: [
       metric("Available", statusCount("Available"), UserRound, "green"),
-      metric("Assigned", statusCount("Assigned", "Busy"), ListChecks, "blue"),
-      metric("On site", statusCount("On Site", "Travelling"), Wrench),
+      metric("Travelling", statusCount("Travelling"), ListChecks, "amber"),
+      metric("On site", statusCount("On Site"), Wrench, "blue"),
+      metric("Busy", statusCount("Busy"), Clock3, "red"),
       metric("Off duty", statusCount("Off Duty", "Leave"), Clock3, "amber"),
     ],
     work_orders: [
       metric("Scheduled", statusCount("Scheduled", "Assigned"), CalendarClock, "blue"),
       metric("In progress", statusCount("In Progress", "On Site", "Travelling"), Wrench),
       metric("Waiting parts", statusCount("Waiting Parts"), Clock3, "amber"),
+      metric(
+        "Overdue",
+        rows.filter(
+          (row) =>
+            row.scheduled_at &&
+            dateKey(row.scheduled_at) < today &&
+            !["Completed", "Cancelled"].includes(row.status),
+        ).length,
+        TriangleAlert,
+        "red",
+      ),
       metric(
         "Completed today",
         rows.filter(
@@ -242,13 +291,20 @@ export function ModuleSummary({
     amc_contracts: [
       metric("Active contracts", statusCount("Active", "Expiring"), ShieldCheck, "green"),
       metric(
-        "Upcoming visits",
-        upcoming("next_visit"),
+        "Due this month",
+        maintenance?.due ??
+          rows.filter((row) => String(row.next_visit ?? "").startsWith(today.slice(0, 7))).length,
         CalendarClock,
         "blue",
-        "Within 30 days · on this page",
+        maintenance ? "Workspace PM schedules" : "On this page",
       ),
-      metric("Visits due", due("next_visit"), TriangleAlert, "amber"),
+      metric(
+        maintenance ? "Overdue PM" : "Visits due",
+        maintenance?.overdue ?? due("next_visit"),
+        TriangleAlert,
+        "red",
+        maintenance ? "Workspace PM schedules" : current,
+      ),
       metric("Expiring soon", statusCount("Expiring"), Clock3, "violet"),
     ],
     pm_schedules: [

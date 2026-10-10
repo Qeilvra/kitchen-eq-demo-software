@@ -18,6 +18,15 @@ import { UploadButton, WorkflowButton } from "@/components/workflow-panels";
 import { ArrowUpRight, Bell, Activity } from "lucide-react";
 import { operationalEvent } from "@/lib/company";
 import { ModuleSummary } from "@/components/design-system";
+import { DataPanel } from "@/components/operations-ui";
+import {
+  ModuleInsights,
+  quotationPresentation,
+  maintenanceView,
+  overviewSignals,
+  ServiceTrendPanel,
+  assetPresentation,
+} from "@/components/operational-insights";
 export default async function ListPage({
   params,
   searchParams,
@@ -47,12 +56,29 @@ export default async function ListPage({
     parent: query.parent,
   });
   const lookup = await recordLookups(entity, data.records);
+  if (entity === "complaints") {
+    const engineerIds = data.records.map((row) => String(row.engineer_id ?? "")).filter(Boolean);
+    if (engineerIds.length)
+      Object.assign(lookup, await lookups(["engineers"], { engineers: engineerIds }));
+  }
+  const presentationRows =
+    entity === "quotations"
+      ? await quotationPresentation(data.records)
+      : entity === "equipment"
+        ? await assetPresentation(data.records, profile)
+        : data.records;
+  const maintenance =
+    entity === "amc_contracts" && canAccess(profile.role, "pm_schedules")
+      ? await maintenanceView()
+      : undefined;
+  const serviceSignals = entity === "complaints" ? await overviewSignals(profile) : undefined;
   const writable = canAccess(profile.role, entity, true);
   return (
     <>
       <PageHeader
         eyebrow="OPERATIONS"
         title={meta.label}
+        module={entity}
         description={meta.description}
         action={
           meta.create && writable ? (
@@ -65,9 +91,11 @@ export default async function ListPage({
       <Notice success={query.success} error={query.error} />
       <ModuleSummary
         entity={entity}
-        rows={data.records}
+        rows={presentationRows}
         count={data.count}
         filtered={Boolean(query.q || query.status || query.parent)}
+        maintenance={maintenance}
+        resolvedToday={serviceSignals?.resolvedToday}
       />
       {entity === "amc_contracts" && canAccess(profile.role, "pm_schedules") && (
         <div className="record-workflow-actions">
@@ -79,7 +107,7 @@ export default async function ListPage({
           </Link>
         </div>
       )}
-      <section className="panel">
+      <section className="panel toolbar-panel">
         <Filters
           entity={entity}
           q={query.q}
@@ -87,57 +115,72 @@ export default async function ListPage({
           foreign={query.foreign}
           parent={query.parent}
         />
-        {["notifications", "activity_log"].includes(entity) ? (
-          <div className="notification-list">
-            {data.records.length === 0 && <p className="muted padded">You’re all caught up.</p>}
-            {data.records.map((row) => (
-              <div className="notification-row" key={row.id}>
-                <span className="notification-icon">
-                  {entity === "notifications" ? <Bell size={18} /> : <Activity size={18} />}
-                </span>
-                <Link href={`/${row.entity_type}/${row.entity_id}`}>
-                  <strong>{operationalEvent(row.name)}</strong>
-                  <span>
-                    {operationalEvent(String(row.entity_type).replaceAll("_", " "))} ·{" "}
-                    {formatDate(row.created_at, true)}
-                  </span>
-                </Link>
-                <Badge value={row.status} />
-                {entity === "notifications" && row.status === "Unread" && (
-                  <WorkflowButton
-                    action="read-notification"
-                    id={row.id}
-                    entity={entity}
-                    secondary
-                    label="Mark read"
-                    returnPath="/notifications"
-                  />
-                )}
-                <Link
-                  href={`/${row.entity_type}/${row.entity_id}`}
-                  className="icon-button"
-                  aria-label="Open related record"
-                >
-                  <ArrowUpRight size={17} />
-                </Link>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <RecordTable entity={entity} rows={data.records} lookup={lookup} />
-        )}
-        <Pagination
-          entity={entity}
-          {...data}
-          query={{
-            ...(query.q ? { q: query.q } : {}),
-            ...(query.status ? { status: query.status } : {}),
-            ...(query.foreign && query.parent
-              ? { foreign: query.foreign, parent: query.parent }
-              : {}),
-          }}
-        />
       </section>
+      <div className={`module-workspace module-workspace-${entity}`}>
+        <div className="module-register">
+          <DataPanel title={`${meta.label} register`} count={data.count}>
+            {["notifications", "activity_log"].includes(entity) ? (
+              <div className="notification-list">
+                {data.records.length === 0 && <p className="muted padded">You’re all caught up.</p>}
+                {data.records.map((row) => (
+                  <div className="notification-row" key={row.id}>
+                    <span className="notification-icon">
+                      {entity === "notifications" ? <Bell size={18} /> : <Activity size={18} />}
+                    </span>
+                    <Link href={`/${row.entity_type}/${row.entity_id}`}>
+                      <strong>{operationalEvent(row.name)}</strong>
+                      <span>
+                        {operationalEvent(String(row.entity_type).replaceAll("_", " "))} ·{" "}
+                        {formatDate(row.created_at, true)}
+                      </span>
+                    </Link>
+                    <Badge value={row.status} />
+                    {entity === "notifications" && row.status === "Unread" && (
+                      <WorkflowButton
+                        action="read-notification"
+                        id={row.id}
+                        entity={entity}
+                        secondary
+                        label="Mark read"
+                        returnPath="/notifications"
+                      />
+                    )}
+                    <Link
+                      href={`/${row.entity_type}/${row.entity_id}`}
+                      className="icon-button"
+                      aria-label="Open related record"
+                    >
+                      <ArrowUpRight size={17} />
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <RecordTable entity={entity} rows={presentationRows} lookup={lookup} />
+            )}
+            <Pagination
+              entity={entity}
+              {...data}
+              query={{
+                ...(query.q ? { q: query.q } : {}),
+                ...(query.status ? { status: query.status } : {}),
+                ...(query.foreign && query.parent
+                  ? { foreign: query.foreign, parent: query.parent }
+                  : {}),
+              }}
+            />
+          </DataPanel>
+        </div>
+        <div className="module-insights">
+          <ModuleInsights
+            entity={entity}
+            rows={presentationRows}
+            lookup={lookup}
+            maintenance={maintenance}
+          />
+          {serviceSignals && <ServiceTrendPanel signals={serviceSignals} />}
+        </div>
+      </div>
     </>
   );
 }

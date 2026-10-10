@@ -21,7 +21,9 @@ test("seeded account opens connected modules and engineer sees only field work",
   await page.getByLabel("Email address").fill("admin@airmech.demo");
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: /Sign in to workspace/ }).click();
-  await expect(page.getByRole("heading", { name: /Welcome back, Ahmed/ })).toBeVisible({
+  await expect(
+    page.getByRole("heading", { name: "Operations Overview", level: 1, exact: true }),
+  ).toBeVisible({
     timeout: 20000,
   });
   for (const url of [

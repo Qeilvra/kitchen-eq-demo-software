@@ -10,6 +10,13 @@ import { recordLookups } from "@/lib/data";
 import { PageHeader, RecordTable } from "@/components/records";
 import { reports } from "@/lib/reports";
 import { ReportSummary } from "@/components/design-system";
+import {
+  ReportVisualization,
+  quotationPresentation,
+  overviewSignals,
+  ServiceTrendPanel,
+} from "@/components/operational-insights";
+import { DataPanel } from "@/components/operations-ui";
 export default async function Reports({
   searchParams,
 }: {
@@ -34,11 +41,15 @@ export default async function Reports({
   if (error) throw new Error("Unable to load report data.");
   const rows = (data ?? []) as unknown as RecordRow[];
   const lookup = await recordLookups(report.entity, rows);
+  const presentationRows =
+    report.entity === "quotations" ? await quotationPresentation(rows) : rows;
+  const serviceSignals = report.key === "complaints" ? await overviewSignals(profile) : undefined;
   return (
     <>
       <PageHeader
         eyebrow="OPERATIONAL INTELLIGENCE"
         title="Reports"
+        module="reports"
         description="Practical insights from your live operational records."
         action={
           <Link className="button secondary" href={`/api/export?report=${report.key}`}>
@@ -62,43 +73,54 @@ export default async function Reports({
             </Link>
           ))}
         </nav>
-        <section className="panel">
-          <div className="report-header">
-            <div>
-              <h2>{report.label}</h2>
-              <p>{report.description}</p>
+        <div className="report-workspace">
+          <section className="panel report-overview-panel">
+            <div className="report-header">
+              <div>
+                <h2>{report.label}</h2>
+                <p>{report.description}</p>
+              </div>
             </div>
-          </div>
-          <ReportSummary rows={rows} count={count ?? 0} entity={report.entity} />
-          <RecordTable entity={report.entity} rows={rows} lookup={lookup} />
-          <div className="pagination">
-            <span>
-              Page {page} · {count ?? 0} records
-            </span>
-            <div>
-              {page > 1 && (
-                <Link
-                  className="button secondary small"
-                  href={`/reports?report=${report.key}&page=${page - 1}`}
-                >
-                  Previous
+            <ReportSummary rows={rows} count={count ?? 0} entity={report.entity} />
+          </section>
+          <ReportVisualization
+            report={report.key}
+            entity={report.entity}
+            rows={presentationRows}
+            lookup={lookup}
+          />
+          {serviceSignals && <ServiceTrendPanel signals={serviceSignals} />}
+          <DataPanel title="Detailed records" count={count ?? 0}>
+            <RecordTable entity={report.entity} rows={presentationRows} lookup={lookup} />
+            <div className="pagination">
+              <span>
+                Page {page} · {count ?? 0} records
+              </span>
+              <div>
+                {page > 1 && (
+                  <Link
+                    className="button secondary small"
+                    href={`/reports?report=${report.key}&page=${page - 1}`}
+                  >
+                    Previous
+                  </Link>
+                )}
+                {page * 20 < (count ?? 0) && (
+                  <Link
+                    className="button secondary small"
+                    href={`/reports?report=${report.key}&page=${page + 1}`}
+                  >
+                    Next
+                  </Link>
+                )}
+                <Link className="text-link" href={`/${report.entity}`}>
+                  Open module
+                  <ArrowUpRight size={13} />
                 </Link>
-              )}
-              {page * 20 < (count ?? 0) && (
-                <Link
-                  className="button secondary small"
-                  href={`/reports?report=${report.key}&page=${page + 1}`}
-                >
-                  Next
-                </Link>
-              )}
-              <Link className="text-link" href={`/${report.entity}`}>
-                Open module
-                <ArrowUpRight size={13} />
-              </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </DataPanel>
+        </div>
       </div>
     </>
   );

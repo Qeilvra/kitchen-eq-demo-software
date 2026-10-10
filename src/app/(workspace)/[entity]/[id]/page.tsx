@@ -41,6 +41,7 @@ import {
   UploadButton,
 } from "@/components/workflow-panels";
 import { workflow } from "@/app/actions";
+import { RecordTimeline, PanelHeader } from "@/components/operations-ui";
 type Tab = { label: string; entity: string; foreign: string };
 const child = (entity: string, foreign: string, label?: string): Tab => ({
   entity,
@@ -212,7 +213,7 @@ export default async function Detail({
         <span>{row.code}</span>
       </div>
       <Notice error={query.error} success={query.success} />
-      <section className="record-hero">
+      <section className={`record-hero detail-hero-${entity}`}>
         <div className="record-hero-icon">
           {entity === "customers" ? (
             <Building2 size={28} />
@@ -230,6 +231,7 @@ export default async function Detail({
           <h1>{row.name}</h1>
           <div className="record-hero-meta">
             <Badge value={row.status} />
+            {row.priority && <Badge value={row.priority} />}
             {row.classification && <Badge value={row.classification} />}
             <span>
               {row.customer_id
@@ -476,6 +478,30 @@ export default async function Detail({
             </div>
           )}
           {entity === "customers" && <CustomerRecent row={row} profile={profile} />}
+          {entity === "equipment" && (
+            <section className="panel">
+              <PanelHeader
+                title="Maintenance timeline"
+                description="Recorded equipment milestones and planned service dates."
+              />
+              <RecordTimeline
+                events={[
+                  { key: "installation_date", title: "Installed" },
+                  { key: "commissioning_date", title: "Commissioned" },
+                  { key: "last_service", title: "Last service" },
+                  { key: "next_service", title: "Next planned service" },
+                  { key: "warranty_end", title: "Warranty ends" },
+                ]
+                  .filter((event) => row[event.key])
+                  .map((event) => ({
+                    id: event.key,
+                    title: event.title,
+                    date: String(row[event.key]),
+                  }))
+                  .sort((a, b) => a.date.localeCompare(b.date))}
+              />
+            </section>
+          )}
         </>
       )}
     </>
@@ -536,16 +562,43 @@ async function CustomerSummary({
       return { ...item, count: count ?? 0 };
     }),
   );
+  const { data: summary } = await db.rpc("am_customer_metrics", { targets: [row.id] });
+  const connected = summary?.[0];
   return (
-    <div className="customer-metrics">
-      {metrics.map(({ entity, label, icon: Icon, count }) => (
-        <Link href={`/customers/${row.id}?tab=${entity}`} key={entity}>
-          <Icon size={19} />
-          <strong>{count}</strong>
-          <span>{label}</span>
+    <>
+      <div className="customer-contact-strip">
+        <Users size={21} />
+        <div>
+          <small>Primary contact</small>
+          <strong>{connected?.primary_contact ?? "No primary contact recorded"}</strong>
+        </div>
+        <Link className="text-link" href={`/customers/${row.id}?tab=contacts`}>
+          View contacts
+          <ArrowUpRight size={15} />
         </Link>
-      ))}
-    </div>
+      </div>
+      <div className="customer-metrics">
+        {metrics.map(({ entity, label, icon: Icon, count }) => (
+          <Link href={`/customers/${row.id}?tab=${entity}`} key={entity}>
+            <Icon size={19} />
+            <strong>
+              {entity === "amc_contracts" && connected
+                ? connected.amc_count
+                : entity === "projects" && connected
+                  ? connected.active_projects
+                  : count}
+            </strong>
+            <span>
+              {entity === "amc_contracts" && connected
+                ? "Active contracts"
+                : entity === "projects" && connected
+                  ? "Active projects"
+                  : label}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 }
 async function CustomerRecent({
@@ -555,7 +608,14 @@ async function CustomerRecent({
   row: RecordRow;
   profile: Awaited<ReturnType<typeof requireProfile>>;
 }) {
-  const keys = ["complaints", "service_reports"].filter((e) => canAccess(profile.role, e));
+  const keys = [
+    "complaints",
+    "projects",
+    "equipment",
+    "amc_contracts",
+    "service_reports",
+    "activity_log",
+  ].filter((e) => canAccess(profile.role, e));
   const results = await Promise.all(
     keys.map(async (entity) => ({
       entity,

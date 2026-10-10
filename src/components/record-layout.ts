@@ -16,8 +16,8 @@ export const recordLayouts: Record<string, RecordColumn[]> = {
   ],
   quotations: [
     { label: "Customer / site", keys: ["customer_id", "site_id"] },
-    { label: "Quotation date", keys: ["quotation_date"] },
-    { label: "Valid until", keys: ["valid_until"] },
+    { label: "Amount", keys: ["quotation_amount"] },
+    { label: "Date / validity", keys: ["quotation_date", "valid_until"] },
     { label: "Follow-up", keys: ["followup_date"] },
   ],
   projects: [

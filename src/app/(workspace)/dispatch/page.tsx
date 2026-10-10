@@ -9,6 +9,7 @@ import { PageHeader, Badge, formatDate, Notice, Empty } from "@/components/recor
 import { DispatchForm } from "@/components/workflow-panels";
 import { Modal } from "@/components/ui";
 import { initials } from "@/components/shell";
+import { StatsStrip } from "@/components/design-system";
 export default async function Dispatch({
   searchParams,
 }: {
@@ -42,9 +43,43 @@ export default async function Dispatch({
       <PageHeader
         eyebrow="SERVICE OPERATIONS"
         title="Engineer Dispatch"
+        module="dispatch"
         description="The right engineer. The right job. A clear plan for the day."
       />
       <Notice {...query} />
+      <StatsStrip
+        label="Field team availability"
+        metrics={[
+          {
+            label: "On site",
+            value: (engineers ?? []).filter((engineer) => engineer.status === "On Site").length,
+            context: "Field team",
+            icon: Radio,
+            tone: "blue",
+          },
+          {
+            label: "Travelling",
+            value: (engineers ?? []).filter((engineer) => engineer.status === "Travelling").length,
+            context: "Field team",
+            icon: Clock3,
+            tone: "amber",
+          },
+          {
+            label: "Available",
+            value: (engineers ?? []).filter((engineer) => engineer.status === "Available").length,
+            context: "Ready for assignment",
+            icon: UserRound,
+            tone: "green",
+          },
+          {
+            label: "Busy",
+            value: (engineers ?? []).filter((engineer) => engineer.status === "Busy").length,
+            context: "Field team",
+            icon: TriangleAlert,
+            tone: "red",
+          },
+        ]}
+      />
       <div className="dispatch-metrics">
         <div>
           <Radio size={20} />

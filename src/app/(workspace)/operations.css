@@ -1,0 +1,2266 @@
+/* Authenticated AIRMECH ONE theme. Every rule is scoped so login is unchanged. */
+.operations-theme {
+  --ops-shell: #061923;
+  --ops-navy: #082735;
+  --ops-panel: #0b2e3c;
+  --ops-panel-raised: #0d3b4a;
+  --ops-cyan: #19bcd0;
+  --ops-light: #f6fafb;
+  --ops-text: #f4fafc;
+  --ops-secondary: #b7cbd4;
+  --ops-muted: #8097a1;
+  --ops-border: rgba(88, 174, 195, 0.22);
+  --ops-border-light: #d7e3e7;
+  --navy: var(--ops-navy);
+  --bg: var(--ops-shell);
+  --text: var(--ops-text);
+  --muted: var(--ops-secondary);
+  --border: var(--ops-border);
+  --teal-light: #104253;
+  --success: #17a96b;
+  --warning: #f2a526;
+  --error: #e65353;
+  --info: #179fe3;
+  min-height: 100svh;
+  background: var(--ops-shell);
+  color: var(--ops-text);
+  font-size: 15px;
+  line-height: 1.55;
+  color-scheme: dark;
+}
+.operations-theme :is(h1, h2, h3, strong) {
+  color: inherit;
+}
+.operations-theme :is(h1, h2, h3, p, a, td, dd) {
+  overflow-wrap: break-word;
+}
+.operations-theme h1 {
+  font-size: 36px;
+}
+.operations-theme h2 {
+  font-size: 20px;
+}
+.operations-theme h3 {
+  font-size: 17px;
+}
+.operations-theme :is(small, .muted) {
+  color: var(--ops-secondary);
+  font-size: 14px;
+}
+.operations-theme .eyebrow {
+  color: var(--ops-cyan);
+  font-size: 12px;
+  letter-spacing: 1.3px;
+}
+.operations-theme :is(a, button):focus-visible {
+  outline: 2px solid var(--ops-cyan);
+  outline-offset: 4px;
+}
+.operations-theme .button {
+  min-height: 46px;
+  background: #0f7484;
+  border-color: #14a3b8;
+  color: #fff;
+  font-size: 15px;
+  box-shadow: none;
+}
+.operations-theme .button:hover {
+  background: #108c9d;
+}
+.operations-theme .button.secondary {
+  background: #113c4b;
+  border-color: #366271;
+  color: var(--ops-text);
+}
+.operations-theme .button.secondary:hover {
+  background: #174d5e;
+  border-color: #19bcd0;
+}
+.operations-theme .icon-button {
+  width: 40px;
+  height: 40px;
+  background: #103543;
+  color: #c1e4ed;
+  border-color: var(--ops-border);
+}
+.operations-theme .icon-button:hover {
+  background: #155061;
+  color: #19bcd0;
+}
+.operations-theme .text-link {
+  color: #69d7e4;
+  font-size: 14px;
+}
+.operations-theme .badge {
+  color: #cae3ea;
+  background: #173d4b;
+  border-color: #2f596a;
+  font-size: 13px;
+  padding: 5px 8px;
+  line-height: 1.4;
+}
+.operations-theme .badge.success {
+  background: #103f36;
+  border-color: #217859;
+  color: #8de0b9;
+}
+.operations-theme .badge.warning {
+  background: #45361e;
+  border-color: #89652b;
+  color: #ffcc73;
+}
+.operations-theme .badge.danger {
+  background: #4c252d;
+  border-color: #96515a;
+  color: #ffb1b1;
+}
+.operations-theme .badge.info {
+  background: #123e59;
+  border-color: #277798;
+  color: #91d7fa;
+}
+.operations-theme .badge > span {
+  flex: none;
+}
+.operations-theme .notice {
+  font-size: 15px;
+}
+.operations-theme .notice-error {
+  background: #40232a;
+  color: #ffc5c5;
+  border-color: #84424b;
+}
+.operations-theme .notice-success {
+  background: #103d33;
+  color: #a7e8c5;
+  border-color: #27694d;
+}
+
+/* One shell with clear structural contrast and selective industrial photography. */
+.operations-theme .sidebar {
+  background: #061f2c;
+  width: 252px;
+  border-right: 1px solid var(--ops-border);
+}
+.operations-theme .main-shell {
+  width: calc(100% - 252px);
+  margin-left: 252px;
+  background: var(--ops-shell);
+}
+.operations-theme .brand-link {
+  padding: 22px 16px;
+}
+.operations-theme .brand strong {
+  font-size: 22px;
+  color: white;
+}
+.operations-theme .brand-mark,
+.operations-theme .brand-one {
+  color: #19bcd0;
+}
+.operations-theme .brand-subtitle {
+  font-size: 12px;
+  color: #77dce7;
+}
+.operations-theme .brand small {
+  font-size: 12px;
+  color: #b7cbd4;
+}
+.operations-theme .sidebar-caption {
+  font-size: 12px;
+  color: #91b1c0;
+  padding-top: 18px;
+}
+.operations-theme .nav-list {
+  gap: 4px;
+  padding: 0 12px;
+}
+.operations-theme .nav-list > a {
+  color: #dfedf2;
+  min-height: 46px;
+  font-size: 15px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+}
+.operations-theme .nav-list > a:hover {
+  background: #0e3a4d;
+  border-color: #235c70;
+}
+.operations-theme .nav-list > a.active {
+  background: #0c7288;
+  border-color: #19bcd0;
+  box-shadow: inset 3px 0 #19bcd0;
+}
+.operations-theme .sidebar-bottom {
+  background:
+    linear-gradient(180deg, #061f2cea, #061f2c88),
+    url("/login-hvac-background.webp") 30% center/cover;
+  min-height: 250px;
+  padding: 22px;
+}
+.operations-theme .sidebar-services {
+  color: #edf8fc;
+  font-size: 14px;
+  border-color: #19bcd0;
+}
+.operations-theme .workspace-indicator,
+.operations-theme .sidebar-bottom > a {
+  color: #c6dce6;
+  font-size: 14px;
+}
+.operations-theme .topbar {
+  height: 74px;
+  padding: 0 26px;
+  gap: 18px;
+  background: #082735;
+  border-color: var(--ops-border);
+}
+.operations-theme .topbar-context {
+  background: #061d29;
+  border-color: #285469;
+  color: #e0f2f7;
+}
+.operations-theme .topbar .profile-menu strong {
+  color: #f4fafc;
+  font-size: 14px;
+}
+.operations-theme .topbar .profile-menu small {
+  color: #b7cbd4;
+  font-size: 13px;
+}
+.operations-theme .avatar {
+  background: #ddf5f8;
+  border-color: #96c8d5;
+  color: #087084;
+}
+.operations-theme .page-content {
+  padding: 26px;
+  max-width: 2000px;
+}
+.operations-theme .main-footer {
+  color: #aac3cd;
+  border-color: var(--ops-border);
+  background: #061923;
+}
+.operations-theme .global-search,
+.operations-theme .list-search {
+  height: 46px;
+  padding: 0 14px;
+  gap: 11px;
+  background: #123b4b;
+  border: 1px solid #396170;
+  color: #b7cbd4;
+  box-shadow: none;
+}
+.operations-theme .global-search input,
+.operations-theme .global-search.large input,
+.operations-theme .list-search input {
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f4fafc;
+  font-size: 15px;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+}
+.operations-theme .global-search input::placeholder,
+.operations-theme .list-search input::placeholder {
+  color: #bed2dc;
+}
+.operations-theme .global-search:focus-within,
+.operations-theme .list-search:focus-within {
+  outline: 2px solid #19bcd04a;
+  outline-offset: 2px;
+  border-color: #19bcd0;
+}
+.operations-theme .global-search input:focus,
+.operations-theme .list-search input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.operations-theme .global-search .search-submit {
+  background: none;
+  border: 0;
+  color: #ddf5f8;
+}
+.operations-theme .global-search.large {
+  max-width: none;
+  height: 50px;
+}
+.operations-theme .page-header {
+  background: #0b2e3c;
+  border: 1px solid var(--ops-border);
+  border-left: 3px solid #19bcd0;
+  min-height: 138px;
+  margin-bottom: 22px;
+  padding: 22px 26px;
+  border-radius: 6px;
+  color: #f4fafc;
+}
+.operations-theme .page-header h1 {
+  font-size: 34px;
+  color: #f4fafc;
+}
+.operations-theme .page-header p {
+  color: #b7cbd4;
+  font-size: 15px;
+  max-width: 800px;
+}
+.operations-theme .page-context {
+  color: #b7cbd4;
+}
+.operations-theme .page-context a {
+  color: #19bcd0;
+}
+.operations-theme .module-header-projects,
+.operations-theme .module-header-equipment,
+.operations-theme .module-header-amc_contracts {
+  background:
+    linear-gradient(90deg, #0b2e3c 30%, #0b2e3ceb 65%, #0b2e3c80),
+    url("/login-operations-background.webp") 80% 40% / cover;
+}
+.operations-theme .overview-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  min-height: 210px;
+  padding: 28px;
+  border: 1px solid #3f7181;
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, #062735f5 5%, #062735c4 45%, #06273545),
+    url("/login-operations-background.webp") center 38% / cover;
+}
+.operations-theme .overview-hero h1 {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 8px 0 12px;
+  color: #fff;
+}
+.operations-theme .overview-hero h1 span {
+  color: #19bcd0;
+}
+.operations-theme .overview-hero p {
+  max-width: 690px;
+  font-size: 16px;
+  color: #e1f1f7;
+  line-height: 1.6;
+}
+.operations-theme .hero-aside {
+  font-size: 14px;
+  color: #d7ecf4;
+  text-align: right;
+}
+.operations-theme .hero-aside .welcome-date {
+  display: block;
+  color: #e5f2f8;
+  min-width: 170px;
+  padding: 0;
+}
+.operations-theme .hero-aside small {
+  color: #c3e4ed;
+}
+.operations-theme .hero-aside p {
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+/* Operational panels mix dark structure with light, legible data surfaces. */
+.operations-theme .panel {
+  background: #0b2e3c;
+  border: 1px solid var(--ops-border);
+  border-radius: 6px;
+  color: #f4fafc;
+  box-shadow: none;
+}
+.operations-theme .operations-panel-header,
+.operations-theme .panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 18px 20px;
+  min-height: 66px;
+  background: #082735;
+  border-bottom: 1px solid #326070;
+  color: #f4fafc;
+}
+.operations-theme .operations-panel-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+.operations-theme .operations-panel-header h2,
+.operations-theme .panel-heading h2 {
+  font-size: 18px;
+  line-height: 1.4;
+  color: #f4fafc;
+}
+.operations-theme .operations-panel-header p {
+  color: #b7cbd4;
+  font-size: 14px;
+  margin-top: 5px;
+}
+.operations-theme .operations-panel-header > div > svg {
+  color: #19bcd0;
+}
+.operations-theme .panel-header-action {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.operations-theme .panel-count,
+.operations-theme .chart-scope {
+  display: block;
+  font-size: 13px;
+  color: #afd7e1;
+}
+.operations-theme .panel-heading .muted {
+  color: #b7cbd4;
+}
+.operations-theme .panel-heading .text-link {
+  color: #6fdae7;
+}
+.operations-theme .stats-strip {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.operations-theme .stats-strip:has(> :nth-child(5)) {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.operations-theme .metric-card {
+  position: relative;
+  padding: 18px 16px;
+  border: 1px solid #9fbfca;
+  border-left: 4px solid var(--metric-color);
+  background: #f6fafb;
+  color: #14242c;
+  gap: 12px;
+  border-radius: 5px;
+  box-shadow: none;
+}
+.operations-theme .metric-content h3 {
+  color: #163847;
+  font-size: 15px;
+  font-weight: 600;
+}
+.operations-theme .metric-content > strong {
+  color: #14242c;
+  font-size: 32px;
+}
+.operations-theme .metric-content p {
+  font-size: 13px;
+  color: #4a6674;
+}
+.operations-theme .metric-icon {
+  width: 42px;
+  height: 42px;
+}
+.operations-theme .metric-violet {
+  --metric-color: #179fe3;
+  --metric-surface: #e5f2fb;
+}
+.operations-theme .metric-blue {
+  --metric-color: #179fe3;
+}
+.operations-theme .metric-green {
+  --metric-color: #17a96b;
+}
+.operations-theme .metric-amber {
+  --metric-color: #f2a526;
+}
+.operations-theme .metric-red {
+  --metric-color: #e65353;
+}
+.operations-theme .filters {
+  padding: 18px 20px;
+  gap: 12px;
+  background: #0d3b4a;
+  border-color: #376372;
+}
+.operations-theme .filters select {
+  height: 46px;
+  background: #082735;
+  border-color: #3d6b7c;
+  color: #f4fafc;
+  font-size: 15px;
+}
+.operations-theme .filter-options {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.operations-theme .mobile-filter-toggle,
+.operations-theme .filter-sheet-heading {
+  display: none;
+}
+.operations-theme .table-wrap {
+  background: #f6fafb;
+  color: #14242c;
+  --text: #14242c;
+  --muted: #526d7c;
+  --border: #d7e3e7;
+  --teal-light: #eaf6f8;
+  color-scheme: light;
+}
+.operations-theme table {
+  font-size: 15px;
+  background: #f6fafb;
+  color: #14242c;
+}
+.operations-theme th {
+  background: #e5f0f4;
+  color: #375c6d;
+  font-size: 13px;
+  border-color: #cedfe6;
+  padding: 15px 14px;
+}
+.operations-theme td {
+  color: #2a4c5c;
+  padding: 18px 14px;
+  border-color: #dce7ed;
+}
+.operations-theme tbody tr:nth-child(even) {
+  background: #f0f6f8;
+}
+.operations-theme tbody tr:hover {
+  background: #e1f2f5;
+}
+.operations-theme .record-table .record-title strong {
+  color: #14242c;
+  font-size: 15px;
+}
+.operations-theme .table-wrap :is(.record-code, .cell-secondary, .cell-label) {
+  color: #526d7c;
+}
+.operations-theme .table-wrap .reference-link {
+  color: #175674;
+}
+.operations-theme .table-wrap .icon-button {
+  background: white;
+  border-color: #c7dce5;
+  color: #2d647a;
+}
+.operations-theme .table-wrap .badge {
+  color: #49616e;
+  background: #e8eff3;
+  border-color: #d0dfe6;
+}
+.operations-theme .table-wrap .badge.success {
+  color: #087446;
+  background: #ddf5e9;
+  border-color: #bde4d1;
+}
+.operations-theme .table-wrap .badge.warning {
+  color: #87570e;
+  background: #fff0d5;
+  border-color: #eacb92;
+}
+.operations-theme .table-wrap .badge.danger {
+  color: #a22932;
+  background: #fce5e7;
+  border-color: #e9bdc2;
+}
+.operations-theme .table-wrap .badge.info {
+  color: #126381;
+  background: #dcf0fa;
+  border-color: #b5d8e8;
+}
+.operations-theme .table-wrap .type-chip {
+  background: #e0eef8;
+  color: #21516b;
+}
+.operations-theme .type-chip {
+  background: #143e52;
+  color: #c4e6f7;
+}
+.operations-theme .money-value {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.operations-theme .pagination {
+  background: #082735;
+  color: #bdd5df;
+  border-color: #335b6b;
+  padding: 16px 20px;
+  font-size: 14px;
+}
+.operations-theme .progress-inline > div {
+  background: #cfdee5;
+}
+.operations-theme .progress-inline i {
+  background: #0f7484;
+}
+.operations-theme .module-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+.operations-theme .module-register,
+.operations-theme .module-insights {
+  min-width: 0;
+}
+.operations-theme .toolbar-panel {
+  margin-bottom: 22px;
+  overflow: visible;
+}
+.operations-theme .toolbar-panel .filters {
+  border: 0;
+  border-radius: 6px;
+}
+.operations-theme
+  .module-workspace:not(.module-workspace-complaints):not(.module-workspace-engineers)
+  .module-insights {
+  order: -1;
+}
+.operations-theme .module-workspace-equipment .module-insights {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.operations-theme .module-insights {
+  display: grid;
+  gap: 22px;
+  align-content: start;
+}
+.operations-theme .data-panel {
+  container-type: inline-size;
+  container-name: record-panel;
+}
+.operations-theme .module-insights:empty,
+.operations-theme .module-insights:not(:has(> *)) {
+  display: none;
+}
+.operations-theme .module-workspace-customers {
+  gap: 0;
+}
+.operations-theme .module-workspace-amc_contracts .module-insights,
+.operations-theme .module-workspace-pm_schedules .module-insights {
+  order: -1;
+}
+.operations-theme .empty {
+  color: #a4c6d2;
+}
+.operations-theme .empty h3 {
+  color: #e2f2f7;
+  font-size: 17px;
+}
+.operations-theme .empty p {
+  color: #b7cbd4;
+  font-size: 14px;
+}
+
+/* Real-data visualizations, with shared legends, tooltips and compact mobile views. */
+.operations-theme .chart-panel-body {
+  padding: 20px;
+  min-width: 0;
+}
+.operations-theme .chart-panel {
+  min-width: 0;
+}
+.operations-theme .chart-footnote {
+  margin-top: 16px;
+  font-size: 13px;
+  color: #b7cbd4;
+  line-height: 1.6;
+}
+.operations-theme .chart-empty {
+  padding: 28px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+  color: #accbd7;
+}
+.operations-theme .chart-empty strong {
+  font-size: 16px;
+  color: #e0f2f7;
+}
+.operations-theme .chart-empty p {
+  font-size: 14px;
+}
+.operations-theme .horizontal-chart {
+  display: grid;
+  gap: 16px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.operations-theme .horizontal-chart-row button {
+  width: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #f4fafc;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  text-align: left;
+  font-size: 15px;
+}
+.operations-theme .horizontal-chart-row button:hover {
+  color: #7ae0ec;
+}
+.operations-theme .horizontal-chart-row strong {
+  font-size: 16px;
+}
+.operations-theme .horizontal-chart-track {
+  grid-column: 1/-1;
+  height: 10px;
+  background: #184554;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.operations-theme .horizontal-chart-track i {
+  display: block;
+  height: 100%;
+  min-width: 0;
+  border-radius: 2px;
+}
+.operations-theme .chart-record-link {
+  font-size: 13px;
+  color: #79ddeb;
+  display: inline-block;
+  margin-top: 6px;
+}
+.operations-theme .chart-hover-detail {
+  min-height: 44px;
+  padding: 12px;
+  border: 1px solid var(--ops-border);
+  margin-top: 14px;
+  background: #082735;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 14px;
+  color: #c4dbe5;
+  border-radius: 4px;
+}
+.operations-theme .operations-pipeline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 20px;
+}
+.operations-theme .pipeline-step {
+  min-width: 0;
+}
+.operations-theme .pipeline-step-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  min-height: 40px;
+}
+.operations-theme .pipeline-step-label > span {
+  color: #72d5e3;
+  font-size: 13px;
+}
+.operations-theme .pipeline-step-label strong {
+  font-size: 15px;
+  line-height: 1.4;
+}
+.operations-theme .pipeline-stage-surface {
+  position: relative;
+  background: #f6fafb;
+  color: #14242c;
+  padding: 20px 14px 16px;
+  border: 1px solid;
+  border-top: 3px solid;
+  border-radius: 4px;
+  overflow: hidden;
+  min-height: 150px;
+}
+.operations-theme .pipeline-stage-surface > strong {
+  font-size: 32px;
+  color: #14242c;
+  line-height: 1.2;
+}
+.operations-theme .pipeline-stage-surface p {
+  font-size: 13px;
+  color: #486877;
+}
+.operations-theme .pipeline-stage-surface a {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #126b7f;
+  font-size: 13px;
+  margin-top: 32px;
+}
+.operations-theme .pipeline-volume {
+  position: absolute;
+  top: 16px;
+  right: 12px;
+  bottom: 48px;
+  width: 7px;
+  background: #dcebef;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.operations-theme .pipeline-volume i {
+  display: block;
+  width: 100%;
+}
+.operations-theme .status-chart {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.9fr) minmax(130px, 1fr);
+  align-items: center;
+  gap: 20px;
+}
+.operations-theme .status-ring {
+  position: relative;
+  width: 100%;
+  max-width: 220px;
+  margin: auto;
+}
+.operations-theme .status-ring svg {
+  width: 100%;
+  display: block;
+}
+.operations-theme .status-ring-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  pointer-events: none;
+}
+.operations-theme .status-ring-label strong {
+  font-size: 32px;
+  line-height: 1.2;
+  color: #f4fafc;
+}
+.operations-theme .status-ring-label span {
+  font-size: 13px;
+  color: #c2d9e2;
+}
+.operations-theme .status-chart-legend {
+  display: grid;
+  gap: 12px;
+}
+.operations-theme .status-chart-legend button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-bottom: 1px solid var(--ops-border);
+  padding: 8px 0;
+  background: transparent;
+  color: #e5f4f8;
+  text-align: left;
+  font-size: 14px;
+}
+.operations-theme .status-chart-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.operations-theme .status-chart-legend span {
+  flex: 1;
+}
+.operations-theme .status-chart-legend strong {
+  font-size: 16px;
+}
+.operations-theme .mobile-status-bars {
+  display: none;
+}
+.operations-theme .trend-chart {
+  min-width: 0;
+  position: relative;
+}
+.operations-theme .chart-loading {
+  position: absolute;
+  inset: 45px 0 50px;
+  display: grid;
+  place-items: center;
+  color: #b7cbd4;
+  font-size: 15px;
+}
+.operations-theme .trend-chart svg {
+  width: 100%;
+  display: block;
+  margin-top: 12px;
+}
+.operations-theme .trend-chart svg text {
+  fill: #c4dbe4;
+  font-size: 13px;
+  font-family: inherit;
+}
+.operations-theme .trend-chart svg [role="button"]:focus-visible {
+  outline: 1px solid #19bcd0;
+}
+.operations-theme .operations-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  font-size: 13px;
+  color: #d2e5ed;
+}
+.operations-theme .operations-chart-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.operations-theme .operations-chart-legend i {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.operations-theme .maintenance-calendar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(200px, 1fr);
+  gap: 22px;
+}
+.operations-theme .calendar-heading {
+  grid-column: 1/-1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.operations-theme .calendar-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.operations-theme .calendar-heading h3 {
+  font-size: 20px;
+}
+.operations-theme .calendar-days,
+.operations-theme .calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.operations-theme .calendar-days {
+  font-size: 13px;
+  color: #b7cbd4;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.operations-theme .calendar-dates {
+  border-left: 1px solid var(--ops-border);
+  border-top: 1px solid var(--ops-border);
+}
+.operations-theme .calendar-dates > * {
+  min-height: 72px;
+  border: 0;
+  border-right: 1px solid var(--ops-border);
+  border-bottom: 1px solid var(--ops-border);
+  background: #082735;
+  color: #f4fafc;
+  padding: 10px 7px;
+  text-align: left;
+}
+.operations-theme .calendar-dates button {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 15px;
+}
+.operations-theme .calendar-dates button.today {
+  background: #114b5c;
+}
+.operations-theme .calendar-dates button.selected {
+  box-shadow: inset 0 0 0 2px #19bcd0;
+}
+.operations-theme .calendar-dates button strong {
+  font-size: 13px;
+  color: #72d8e7;
+}
+.operations-theme .calendar-agenda {
+  background: #082735;
+  padding: 18px;
+  border: 1px solid var(--ops-border);
+  border-radius: 4px;
+  max-height: 430px;
+  overflow: auto;
+}
+.operations-theme .calendar-agenda h3 {
+  font-size: 17px;
+  margin-bottom: 16px;
+}
+.operations-theme .calendar-agenda a {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--ops-border);
+}
+.operations-theme .calendar-agenda time {
+  width: 32px;
+  height: 32px;
+  background: #144a5c;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  color: #a9e6ef;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+.operations-theme .calendar-agenda a > div {
+  flex: 1;
+  min-width: 0;
+}
+.operations-theme .calendar-agenda strong {
+  font-size: 15px;
+  display: block;
+}
+.operations-theme .calendar-agenda span {
+  font-size: 13px;
+  color: #b7cbd4;
+}
+
+/* Dashboard composition follows the reference, using live counts and existing states. */
+.operations-theme .airmech-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.operations-theme .airmech-overview > * {
+  margin: 0;
+}
+.operations-theme .airmech-overview > .overview-hero {
+  order: 0;
+}
+.operations-theme .airmech-overview > .kpi-grid {
+  order: 1;
+}
+.operations-theme .airmech-overview > .dashboard-section-title {
+  order: 2;
+}
+.operations-theme .airmech-overview > .urgent-strip {
+  order: 3;
+}
+.operations-theme .airmech-overview > .dashboard-main-grid {
+  order: 4;
+}
+.operations-theme .airmech-overview > .dashboard-bottom-grid {
+  order: 5;
+}
+.operations-theme .airmech-overview > .dashboard-summary-grid {
+  order: 6;
+}
+.operations-theme .airmech-overview > .dashboard-lower-grid {
+  order: 7;
+}
+.operations-theme .airmech-overview .kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+.operations-theme .kpi-grid .metric-card {
+  background: #0c3747;
+  border-color: #347487;
+  border-left-width: 1px;
+  color: #f4fafc;
+  padding: 18px 14px;
+  align-items: flex-start;
+}
+.operations-theme .kpi-grid .metric-content h3 {
+  color: #e8f6fb;
+  font-size: 15px;
+  font-weight: 500;
+}
+.operations-theme .kpi-grid .metric-content > strong {
+  color: #fff;
+  font-size: 32px;
+}
+.operations-theme .kpi-grid .metric-content p {
+  color: #b7cbd4;
+  font-size: 13px;
+}
+.operations-theme .kpi-grid .metric-icon {
+  background: #135466;
+  color: #5de0ef;
+  width: 40px;
+  height: 40px;
+}
+.operations-theme .kpi-grid .metric-red .metric-icon {
+  background: #63363d;
+  color: #ff9292;
+}
+.operations-theme .kpi-grid .metric-amber .metric-icon {
+  background: #634c28;
+  color: #ffd17b;
+}
+.operations-theme .dashboard-section-title h2 {
+  font-size: 20px;
+}
+.operations-theme .urgent-strip {
+  background: #3a252b;
+  border-color: #925159;
+  color: #ffb8bd;
+}
+.operations-theme .urgent-strip > span {
+  color: #edbcc1;
+}
+.operations-theme .airmech-overview .dashboard-main-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.operations-theme .airmech-overview .dashboard-main-grid > .commercial-pipeline {
+  order: 0;
+}
+.operations-theme .airmech-overview .dashboard-main-grid > .complaint-panel:last-child {
+  order: 1;
+  grid-column: auto;
+}
+.operations-theme .airmech-overview .dashboard-main-grid > .engineer-panel {
+  order: 2;
+  grid-column: 1/-1;
+}
+.operations-theme .commercial-pipeline .operations-panel-header {
+  min-height: 106px;
+  align-items: flex-end;
+  background:
+    linear-gradient(90deg, #082735ec, #082735a6),
+    url("/login-hvac-background.webp") 35% 48% / cover;
+}
+.operations-theme .engineer-panel .operations-panel-header {
+  min-height: 106px;
+  align-items: flex-end;
+  background:
+    linear-gradient(90deg, #082735ee, #082735af),
+    url("/login-operations-background.webp") 80% 50% / cover;
+}
+.operations-theme .complaint-panel .operations-panel-header {
+  min-height: 106px;
+  align-items: flex-end;
+  background: #0d3b4a;
+}
+.operations-theme .pipeline-note {
+  padding: 0 20px 20px;
+  color: #b7cbd4;
+  font-size: 14px;
+}
+.operations-theme .engineer-list {
+  padding: 0 18px;
+}
+.operations-theme .engineer-status-counters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 16px 18px 0;
+}
+.operations-theme .engineer-status-counters > div {
+  background: #f6fafb;
+  border: 1px solid #abc7d1;
+  border-top: 3px solid;
+  border-radius: 4px;
+  padding: 10px 12px;
+  color: #14242c;
+}
+.operations-theme .engineer-status-counters span {
+  font-size: 13px;
+  color: #335463;
+  display: block;
+}
+.operations-theme .engineer-status-counters strong {
+  font-size: 28px;
+  line-height: 1.3;
+  color: #14242c;
+}
+.operations-theme .engineer-row {
+  gap: 12px;
+  padding: 16px 0;
+  border-color: var(--ops-border);
+  flex-wrap: nowrap;
+}
+.operations-theme .engineer-row > div {
+  min-width: 0;
+}
+.operations-theme .engineer-row strong {
+  font-size: 15px;
+  color: #f4fafc;
+}
+.operations-theme .engineer-row > div span {
+  font-size: 13px;
+  color: #b7cbd4;
+}
+.operations-theme .engineer-row small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #acd0df;
+  margin-top: 6px;
+}
+.operations-theme .engineer-row .badge {
+  font-size: 12px;
+  max-width: 100px;
+}
+.operations-theme .panel-bottom-link {
+  background: #082735;
+  border-color: #315e6d;
+  color: #69d7e4;
+  font-size: 14px;
+  padding: 16px 18px;
+}
+.operations-theme .airmech-overview .dashboard-bottom-grid,
+.operations-theme .dashboard-summary-grid,
+.operations-theme .dashboard-lower-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.operations-theme .airmech-overview .dashboard-bottom-grid > .renewal-panel {
+  grid-column: 1/-1;
+  background: #0d3b4a;
+  border-color: #326a7c;
+}
+.operations-theme .attention-list {
+  padding: 0 18px;
+}
+.operations-theme .attention-list > a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--ops-border);
+  flex-wrap: wrap;
+}
+.operations-theme .attention-list > a > div {
+  flex: 1;
+  min-width: 120px;
+}
+.operations-theme .attention-list .record-code {
+  font-size: 13px;
+  color: #7bddea;
+}
+.operations-theme .attention-list strong {
+  display: block;
+  font-size: 15px;
+}
+.operations-theme .attention-list small {
+  font-size: 13px;
+}
+.operations-theme .attention-list time {
+  font-size: 13px;
+  color: #b7cbd4;
+}
+.operations-theme .activity-feed > a {
+  border-color: var(--ops-border);
+  padding: 16px 0;
+}
+.operations-theme .activity-feed strong {
+  color: #e4f5fa;
+  font-size: 15px;
+}
+.operations-theme .activity-feed time {
+  color: #aecbd7;
+  font-size: 13px;
+}
+.operations-theme .timeline-dot {
+  background: #19bcd0;
+}
+.operations-theme .overview-record-heading strong {
+  color: #f4fafc;
+}
+.operations-theme .overview-record-metrics {
+  border-color: #316070;
+  background: #082735;
+}
+.operations-theme .overview-record-metrics > :nth-child(n) {
+  border-color: #316070;
+}
+.operations-theme .overview-record-metrics strong {
+  color: #7de0ea;
+}
+.operations-theme .overview-record-metrics small {
+  color: #b7cbd4;
+}
+.operations-theme .overview-history > a {
+  border-color: #316070;
+  color: #d5eaf3;
+}
+.operations-theme .overview-history > a > span {
+  color: #b7cbd4;
+}
+.operations-theme .mini-records > a {
+  border-color: var(--ops-border);
+}
+.operations-theme .mini-records strong {
+  color: #79dcea;
+}
+.operations-theme .mini-records span:not(.badge) {
+  color: #e1f1f8;
+  font-size: 15px;
+}
+.operations-theme .mini-icon {
+  background: #154d60;
+  color: #75dbe7;
+}
+.operations-theme .mini-records small {
+  color: #b7cbd4;
+  font-size: 13px;
+}
+.operations-theme .renewal-panel h3 {
+  color: #f4fafc;
+}
+.operations-theme .renewal-panel p {
+  color: #bdd8e3;
+}
+.operations-theme .chart-footer {
+  color: #b7cbd4;
+  padding: 16px 20px;
+  font-size: 14px;
+}
+
+/* Detail identity, execution workflows and grouped forms. */
+.operations-theme :is(.breadcrumb, .back-link) {
+  color: #afd2df;
+  font-size: 14px;
+}
+.operations-theme .record-hero {
+  background: #0d3b4a;
+  border-color: #3b7181;
+  color: #f4fafc;
+  border-radius: 6px;
+  padding: 26px;
+}
+.operations-theme .record-hero h1 {
+  font-size: 34px;
+  color: white;
+}
+.operations-theme .record-hero-icon {
+  background: #135365;
+  color: #71dfe9;
+  border: 1px solid #307a8c;
+}
+.operations-theme .record-hero-meta {
+  color: #b7cbd4;
+  font-size: 15px;
+}
+.operations-theme .detail-hero-equipment {
+  background:
+    linear-gradient(90deg, #0d3b4a 20%, #0d3b4ae8 60%, #0d3b4a90),
+    url("/login-operations-background.webp") 15% 38% / cover;
+}
+.operations-theme .record-tabs {
+  border-color: #366474;
+  gap: 4px;
+  background: #082735;
+  padding: 0 12px;
+  border-radius: 5px 5px 0 0;
+}
+.operations-theme .record-tabs > a {
+  color: #c1d8e3;
+  font-size: 15px;
+  padding: 16px 12px;
+}
+.operations-theme .record-tabs > a.active {
+  color: #64dcea;
+  border-color: #19bcd0;
+  background: #103d4e;
+}
+.operations-theme .detail-fields {
+  background: #0b2e3c;
+  border-color: #315867;
+}
+.operations-theme .detail-fields dt {
+  font-size: 14px;
+  color: #a7c9d7;
+}
+.operations-theme .detail-fields dd {
+  font-size: 15px;
+  color: #f4fafc;
+}
+.operations-theme .reference-link {
+  color: #85d7ef;
+}
+.operations-theme .context-list {
+  border-color: #315867;
+  color: #e1f0f6;
+}
+.operations-theme .context-list > div:not(.coverage-note) {
+  border-color: #315867;
+}
+.operations-theme .context-icon {
+  background: #144b5d;
+  color: #7bd9e5;
+}
+.operations-theme .coverage-note {
+  background: #104039;
+  border-color: #287657;
+  color: #9ce1bf;
+}
+.operations-theme .coverage-note p {
+  color: #b8dcd1;
+  font-size: 14px;
+}
+.operations-theme .customer-metrics > a {
+  background: #f6fafb;
+  border-color: #acc8d3;
+  color: #14242c;
+}
+.operations-theme .customer-metrics strong {
+  color: #14242c;
+}
+.operations-theme .customer-metrics span {
+  color: #516f7d;
+}
+.operations-theme .customer-metrics svg {
+  color: #0f7484;
+}
+.operations-theme .customer-contact-strip {
+  padding: 16px 20px;
+  background: #0b2e3c;
+  border: 1px solid var(--ops-border);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.operations-theme .customer-contact-strip small {
+  color: #b7cbd4;
+  font-size: 13px;
+}
+.operations-theme .quotation-summary {
+  background: #f6fafb;
+  border-color: #afc9d3;
+  color: #14242c;
+}
+.operations-theme .quotation-summary span {
+  color: #516f7d;
+}
+.operations-theme .quotation-summary .button {
+  color: white;
+}
+.operations-theme .quotation-total strong {
+  color: #0f7484;
+}
+.operations-theme .record-form {
+  padding: 24px;
+  background: #082735;
+}
+.operations-theme .form-sections {
+  display: grid;
+  gap: 22px;
+}
+.operations-theme .form-section {
+  margin: 0;
+  min-width: 0;
+  border: 1px solid #adc8d2;
+  border-radius: 5px;
+  padding: 20px;
+  background: #f6fafb;
+  color: #14242c;
+  color-scheme: light;
+}
+.operations-theme .form-section legend {
+  padding: 6px 12px;
+  border: 1px solid #316475;
+  background: #0d3b4a;
+  color: #eaf7fc;
+  font-size: 16px;
+  font-weight: 650;
+  border-radius: 4px;
+}
+.operations-theme .form-section > p {
+  color: #5b7280;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.operations-theme .form-section label > span {
+  color: #264755;
+  font-size: 15px;
+}
+.operations-theme .form-section .form-grid {
+  margin-top: 4px;
+}
+.operations-theme input,
+.operations-theme select,
+.operations-theme textarea {
+  background: #f6fafb;
+  border: 1px solid #abc5d0;
+  color: #14242c;
+  min-height: 46px;
+  font-size: 15px;
+  color-scheme: light;
+}
+.operations-theme label > span,
+.operations-theme .record-form label > span {
+  color: #c5dce6;
+  font-size: 15px;
+}
+.operations-theme .form-section label > span {
+  color: #264755;
+}
+.operations-theme .form-actions {
+  border-color: #315f70;
+  padding-top: 20px;
+  margin-top: 22px;
+}
+.operations-theme .modal {
+  background: #082735;
+  color: #f4fafc;
+  border: 1px solid #427589;
+  border-radius: 6px;
+}
+.operations-theme .modal > header {
+  background: #0d3b4a;
+  border-color: #427589;
+}
+.operations-theme .modal::backdrop {
+  background: #021019c4;
+}
+.operations-theme .work-panel .form-actions {
+  background: #082735;
+}
+.operations-theme .job-step-actions,
+.operations-theme .job-secondary-actions {
+  background: #0b2e3c;
+}
+.operations-theme .service-report {
+  background: #f6fafb;
+  color: #14242c;
+  --muted: #526d7c;
+  --text: #14242c;
+  --border: #d7e3e7;
+  --navy: #082735;
+  color-scheme: light;
+}
+.operations-theme .service-report :is(h1, h2, h3, strong) {
+  color: #14242c;
+}
+.operations-theme .service-report .eyebrow {
+  color: #0f7484;
+}
+.operations-theme .service-report :is(p, small) {
+  color: #526d7c;
+}
+.operations-theme .operations-timeline {
+  list-style: none;
+  padding: 20px;
+  margin: 0;
+}
+.operations-theme .operations-timeline li {
+  display: grid;
+  grid-template-columns: 102px 16px minmax(0, 1fr);
+  gap: 14px;
+  padding: 0 0 24px;
+  position: relative;
+  font-size: 14px;
+}
+.operations-theme .operations-timeline time {
+  color: #b7cbd4;
+  padding-top: 2px;
+  font-size: 13px;
+}
+.operations-theme .timeline-node {
+  width: 10px;
+  height: 10px;
+  background: #19bcd0;
+  border-radius: 50%;
+  margin-top: 6px;
+  position: relative;
+}
+.operations-theme .operations-timeline li:not(:last-child) .timeline-node:after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  bottom: -62px;
+  left: 4px;
+  width: 1px;
+  background: #376678;
+}
+.operations-theme .operations-timeline strong {
+  color: #f4fafc;
+  font-size: 15px;
+}
+.operations-theme .operations-timeline strong a {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.operations-theme .operations-timeline p {
+  color: #b7cbd4;
+  margin: 4px 0 8px;
+}
+
+/* Reports, dispatch, admin and supporting routes share the same tonal structure. */
+.operations-theme .reports-layout {
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 22px;
+}
+.operations-theme .report-nav {
+  background: #082735;
+  border-color: #326070;
+  padding: 12px;
+}
+.operations-theme .report-nav > a {
+  color: #c0dce6;
+  border-radius: 4px;
+  border-color: transparent;
+  font-size: 15px;
+}
+.operations-theme .report-nav > a.active {
+  background: #0f4b60;
+  border-color: #19bcd0;
+  color: #7fe4ef;
+}
+.operations-theme .report-nav > a:hover {
+  background: #0d3b4a;
+}
+.operations-theme .report-workspace {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+.operations-theme .report-header {
+  background: #0d3b4a;
+  border-color: #326070;
+  color: #f4fafc;
+}
+.operations-theme .report-header h2 {
+  font-size: 24px;
+}
+.operations-theme .report-header p {
+  color: #b7cbd4;
+}
+.operations-theme .report-summary {
+  border-color: #326070;
+  background: #082735;
+}
+.operations-theme .report-total > strong {
+  color: #65dbe8;
+}
+.operations-theme .report-total > span,
+.operations-theme .report-total small {
+  color: #c7e0e8;
+}
+.operations-theme .report-status-track {
+  background: #174e60;
+}
+.operations-theme .report-status-track i {
+  background: #19bcd0;
+}
+.operations-theme .report-breakdown h3 {
+  color: #e6f4f9;
+}
+.operations-theme .report-workspace .operations-pipeline {
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+.operations-theme .report-workspace .chart-panel .operations-panel-header {
+  min-height: 76px;
+}
+.operations-theme .settings-grid .panel {
+  background: #0b2e3c;
+}
+.operations-theme .settings-grid p {
+  color: #b7cbd4;
+}
+.operations-theme .setting-row {
+  background: #082735;
+  border-color: #376273;
+  color: #f4fafc;
+}
+.operations-theme .setting-row strong {
+  color: #f4fafc;
+}
+.operations-theme .setting-row svg {
+  color: #66d7e7;
+}
+.operations-theme .notification-row {
+  border-color: #315b6a;
+  color: #f4fafc;
+}
+.operations-theme .notification-row strong {
+  color: #edf8fc;
+}
+.operations-theme .notification-row > a > span {
+  color: #b7cbd4;
+}
+.operations-theme .notification-icon {
+  background: #13495c;
+  color: #6edce9;
+}
+.operations-theme .dispatch-metrics > div {
+  background: #f6fafb;
+  color: #14242c;
+  border-color: #a9c7d2;
+}
+.operations-theme .dispatch-metrics span {
+  color: #516f7d;
+}
+.operations-theme .dispatch-job {
+  background: #082735;
+  border-color: #376b7d;
+}
+.operations-theme .dispatch-job :is(h3, strong) {
+  color: #f4fafc;
+}
+.operations-theme .dispatch-job p,
+.operations-theme .dispatch-job footer {
+  color: #b7cbd4;
+}
+.operations-theme .dispatch-engineers > a {
+  border-color: #315b6a;
+}
+.operations-theme .dispatch-engineers strong {
+  color: #f4fafc;
+}
+.operations-theme .dispatch-grid > section:nth-child(2) {
+  order: -1;
+}
+.operations-theme .dispatch-grid {
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+}
+.operations-theme .search-results > a {
+  border-color: #315b6a;
+  color: #f4fafc;
+}
+.operations-theme .search-results > a:hover {
+  background: #124455;
+}
+.operations-theme .search-results > a > div span {
+  color: #b7cbd4;
+}
+.operations-theme .search-result-icon {
+  background: #13495c;
+  color: #6edce9;
+}
+.operations-theme .help-steps p {
+  color: #b7cbd4;
+}
+.operations-theme .demo-callout {
+  background: #103f4f;
+  color: #ccebf2;
+}
+.operations-theme .error-panel {
+  background: #0b2e3c;
+  border-color: #376273;
+}
+.operations-theme .error-panel p {
+  color: #b7cbd4;
+}
+.operations-theme .loading-line,
+.operations-theme .loading-cards > div {
+  background: #164456;
+  animation: none;
+}
+.operations-theme .field-shell {
+  background: #061923;
+}
+.operations-theme .field-header {
+  background: #082735;
+  border-bottom: 1px solid #315f70;
+}
+.operations-theme .field-welcome {
+  background: #0b2e3c;
+  border-bottom: 1px solid #315f70;
+}
+.operations-theme .next-job {
+  background: #0b2e3c;
+  border-color: #376b7d;
+}
+.operations-theme .next-job h2 {
+  color: #f4fafc;
+}
+.operations-theme .next-job p {
+  color: #b7cbd4;
+}
+.operations-theme .field-quick-actions > a {
+  background: #0d3b4a;
+  border-color: #376b7d;
+  color: #cfeaf3;
+}
+.operations-theme .field-jobs {
+  background: #0b2e3c;
+  border-color: #376b7d;
+}
+.operations-theme .field-job-card {
+  border-color: #315f70;
+  color: #f4fafc;
+}
+.operations-theme .field-job-card p {
+  color: #b7cbd4;
+}
+.operations-theme .field-shell .record-hero h1 {
+  font-size: 32px;
+}
+.operations-theme .field-shell .record-form .form-actions {
+  background: #082735;
+}
+
+.operations-theme .mobile-record {
+  background: #0b2e3c;
+  color: #f4fafc;
+  border-color: #396b7d;
+  padding: 20px;
+}
+.operations-theme .mobile-record:last-child {
+  border-color: #396b7d;
+}
+.operations-theme .record-card-heading h3 {
+  color: #f4fafc;
+  font-size: 16px;
+}
+.operations-theme .record-card-top > .badge {
+  max-width: 120px;
+}
+.operations-theme .mobile-record-context dt {
+  color: #a4c4d2;
+}
+.operations-theme .mobile-record-context dd {
+  color: #e7f5fa;
+  font-size: 15px;
+}
+.operations-theme .record-card-footer {
+  border-color: #396b7d;
+  color: #74ddeb;
+}
+.operations-theme .customer-card-icon {
+  background: #124b5e;
+  color: #83e0eb;
+}
+
+@media (min-width: 1440px) {
+  .operations-theme .airmech-overview .dashboard-main-grid {
+    grid-template-columns: 1.05fr 1fr 1.1fr;
+  }
+  .operations-theme .airmech-overview .dashboard-main-grid > .engineer-panel {
+    grid-column: auto;
+  }
+  .operations-theme .airmech-overview .dashboard-bottom-grid,
+  .operations-theme .dashboard-summary-grid,
+  .operations-theme .dashboard-lower-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .operations-theme .dashboard-summary-grid > .panel:last-child,
+  .operations-theme .dashboard-lower-grid > .panel:last-child {
+    grid-column: auto;
+  }
+}
+@media (min-width: 1280px) {
+  .operations-theme .module-workspace-complaints,
+  .operations-theme .module-workspace-engineers {
+    grid-template-columns: minmax(0, 1.9fr) minmax(340px, 1fr);
+    align-items: start;
+  }
+  .operations-theme .module-workspace-complaints .record-table th:first-child {
+    width: 25%;
+  }
+}
+@container record-panel (max-width: 850px) {
+  .operations-theme .table-wrap {
+    display: none;
+  }
+  .operations-theme .mobile-record-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@container record-panel (max-width: 600px) {
+  .operations-theme .mobile-record-list {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 1280px) {
+  .operations-theme .kpi-grid .metric-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .operations-theme .kpi-grid .metric-content h3 {
+    min-height: 44px;
+  }
+  .operations-theme .kpi-grid .metric-icon {
+    width: 34px;
+    height: 34px;
+  }
+  .operations-theme .hero-aside {
+    display: none;
+  }
+  .operations-theme .reports-layout {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+}
+@media (max-width: 1024px) {
+  .operations-theme .main-shell {
+    margin-left: 0;
+    width: 100%;
+  }
+  .operations-theme .sidebar {
+    display: none;
+  }
+  .operations-theme .page-content {
+    padding: 24px;
+  }
+  .operations-theme .mobile-more {
+    background: #082735;
+    border-bottom: 1px solid #396b7d;
+  }
+  .operations-theme .reports-layout {
+    grid-template-columns: 1fr;
+  }
+  .operations-theme .report-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .operations-theme .report-nav h2 {
+    grid-column: 1/-1;
+  }
+  .operations-theme .maintenance-calendar {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .operations-theme .stats-strip,
+  .operations-theme .stats-strip:has(> :nth-child(5)) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .operations-theme .airmech-overview .kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .operations-theme .airmech-overview .kpi-grid .metric-card {
+    flex-direction: row;
+  }
+  .operations-theme .kpi-grid .metric-content h3 {
+    min-height: 0;
+  }
+  .operations-theme .report-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .operations-theme .module-workspace-equipment .module-insights {
+    grid-template-columns: 1fr;
+  }
+  .operations-theme h1,
+  .operations-theme .page-header h1,
+  .operations-theme .overview-hero h1 {
+    font-size: 30px;
+  }
+  .operations-theme .topbar {
+    height: auto;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  .operations-theme .page-content {
+    padding: 18px 16px 28px;
+  }
+  .operations-theme .page-header {
+    padding: 20px;
+    min-height: 0;
+    gap: 18px;
+  }
+  .operations-theme .page-header p {
+    font-size: 15px;
+  }
+  .operations-theme .overview-hero {
+    min-height: 230px;
+    padding: 24px 20px;
+    background-position: 26% 40%;
+  }
+  .operations-theme .overview-hero p {
+    font-size: 15px;
+  }
+  .operations-theme .stats-strip,
+  .operations-theme .stats-strip:has(> :nth-child(5)),
+  .operations-theme .airmech-overview .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .operations-theme .metric-card,
+  .operations-theme .kpi-grid .metric-card {
+    padding: 16px 12px;
+    min-height: 136px;
+  }
+  .operations-theme .metric-content h3 {
+    font-size: 14px;
+  }
+  .operations-theme .metric-content > strong,
+  .operations-theme .kpi-grid .metric-content > strong {
+    font-size: 30px;
+  }
+  .operations-theme .metric-content p {
+    font-size: 13px;
+  }
+  .operations-theme .metric-icon {
+    display: none;
+  }
+  .operations-theme .airmech-overview .kpi-grid > .metric-link:last-child:nth-child(odd),
+  .operations-theme .stats-strip > .metric-card:last-child:nth-child(odd) {
+    grid-column: 1/-1;
+  }
+  .operations-theme .operations-panel-header,
+  .operations-theme .panel-heading {
+    padding: 16px 18px;
+  }
+  .operations-theme .operations-panel-header h2,
+  .operations-theme .panel-heading h2 {
+    font-size: 18px;
+  }
+  .operations-theme .operations-panel-header p {
+    font-size: 14px;
+  }
+  .operations-theme .panel-header-action {
+    max-width: 100%;
+  }
+  .operations-theme .airmech-overview .dashboard-main-grid,
+  .operations-theme .airmech-overview .dashboard-bottom-grid,
+  .operations-theme .dashboard-summary-grid,
+  .operations-theme .dashboard-lower-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .operations-theme .airmech-overview .dashboard-main-grid > .engineer-panel,
+  .operations-theme .dashboard-summary-grid > .panel:last-child,
+  .operations-theme .dashboard-lower-grid > .panel:last-child {
+    grid-column: auto;
+  }
+  .operations-theme .airmech-overview .dashboard-main-grid .operations-panel-header {
+    min-height: 88px;
+  }
+  .operations-theme .engineer-row {
+    flex-wrap: wrap;
+  }
+  .operations-theme .engineer-row > div {
+    min-width: 120px;
+  }
+  .operations-theme .filters {
+    padding: 16px;
+  }
+  .operations-theme .filters .list-search {
+    flex-basis: calc(100% - 100px);
+    width: auto;
+  }
+  .operations-theme .mobile-filter-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+  .operations-theme .filter-options {
+    display: none;
+  }
+  .operations-theme .filter-options[data-open="true"] {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: #082735;
+    color: #f4fafc;
+    z-index: 100;
+    padding: 28px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+    overflow: auto;
+  }
+  .operations-theme .filter-sheet-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #386677;
+  }
+  .operations-theme .filter-options select {
+    max-width: none;
+    width: 100%;
+    flex: none;
+  }
+  .operations-theme .filter-options .button {
+    min-height: 48px;
+  }
+  .operations-theme .filter-options .text-link {
+    font-size: 15px;
+  }
+  .operations-theme .global-search input,
+  .operations-theme .global-search.large input,
+  .operations-theme .list-search input {
+    font-size: 16px;
+  }
+  .operations-theme .mobile-record-list {
+    padding: 14px;
+    gap: 14px;
+  }
+  .operations-theme .mobile-record {
+    padding: 18px;
+  }
+  .operations-theme .operations-pipeline {
+    grid-template-columns: 1fr;
+    padding: 18px;
+    gap: 12px;
+  }
+  .operations-theme .pipeline-step {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.8fr) minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+  }
+  .operations-theme .pipeline-step-label {
+    margin: 0;
+    min-height: 0;
+  }
+  .operations-theme .pipeline-stage-surface {
+    min-height: 0;
+    padding: 12px 14px;
+  }
+  .operations-theme .pipeline-stage-surface > strong {
+    font-size: 28px;
+  }
+  .operations-theme .pipeline-stage-surface a {
+    margin-top: 8px;
+    font-size: 13px;
+  }
+  .operations-theme .pipeline-volume {
+    bottom: 14px;
+    top: 14px;
+  }
+  .operations-theme .status-chart {
+    display: block;
+  }
+  .operations-theme .status-ring,
+  .operations-theme .status-chart-legend {
+    display: none;
+  }
+  .operations-theme .mobile-status-bars {
+    display: grid;
+    gap: 16px;
+  }
+  .operations-theme .mobile-status-bars > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 16px;
+    font-size: 15px;
+  }
+  .operations-theme .mobile-status-bars > div > div {
+    grid-column: 1/-1;
+    background: #174859;
+    height: 9px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .operations-theme .mobile-status-bars i {
+    display: block;
+    height: 100%;
+  }
+  .operations-theme .chart-panel-body {
+    padding: 18px;
+  }
+  .operations-theme .chart-hover-detail {
+    min-height: 56px;
+    font-size: 14px;
+  }
+  .operations-theme .calendar-dates > * {
+    min-height: 60px;
+    padding: 8px 4px;
+  }
+  .operations-theme .calendar-event-word {
+    display: none;
+  }
+  .operations-theme .calendar-heading h3 {
+    font-size: 18px;
+  }
+  .operations-theme .calendar-days {
+    font-size: 13px;
+  }
+  .operations-theme .calendar-agenda {
+    max-height: 330px;
+  }
+  .operations-theme .calendar-heading > div {
+    gap: 8px;
+  }
+  .operations-theme .calendar-heading .button {
+    padding: 8px 12px;
+  }
+  .operations-theme .record-hero {
+    padding: 20px;
+  }
+  .operations-theme .dispatch-grid {
+    grid-template-columns: 1fr;
+  }
+  .operations-theme .record-hero h1,
+  .operations-theme .field-shell .record-hero h1 {
+    font-size: 28px;
+  }
+  .operations-theme .record-hero-meta {
+    font-size: 14px;
+  }
+  .operations-theme .form-section {
+    padding: 18px 14px;
+  }
+  .operations-theme .record-form {
+    padding: 18px 14px;
+  }
+  .operations-theme .form-section legend {
+    font-size: 16px;
+  }
+  .operations-theme .record-form :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  .operations-theme .work-panel .form-actions {
+    bottom: 80px;
+  }
+  .operations-theme .report-nav {
+    gap: 6px;
+    padding: 10px;
+  }
+  .operations-theme .report-nav > a {
+    padding: 12px 10px;
+    font-size: 14px;
+    border-color: #315e6f;
+  }
+  .operations-theme .report-workspace .operations-pipeline {
+    grid-template-columns: 1fr;
+  }
+  .operations-theme .report-summary {
+    gap: 16px;
+    padding: 20px;
+  }
+  .operations-theme .operations-timeline {
+    padding: 18px;
+  }
+  .operations-theme .operations-timeline li {
+    grid-template-columns: 85px 10px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .operations-theme .bottom-nav {
+    background: #061f2c;
+    border-top: 1px solid #346578;
+  }
+  .operations-theme .bottom-nav > a.active {
+    color: #19bcd0;
+  }
+}
+@media print {
+  .operations-theme {
+    background: white;
+    color: #14242c;
+    --text: #14242c;
+    --muted: #526d7c;
+    --border: #d7e3e7;
+    color-scheme: light;
+  }
+  .operations-theme .panel {
+    background: white;
+    color: #14242c;
+    border-color: #d7e3e7;
+  }
+  .operations-theme .record-form,
+  .operations-theme .chart-panel {
+    display: none;
+  }
+  .operations-theme .service-report {
+    color: #14242c;
+    background: white;
+  }
+}
