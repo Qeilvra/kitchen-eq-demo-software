@@ -6,6 +6,8 @@ import { supabase } from "@/lib/supabase";
 import { authorize, requireProfile } from "@/lib/auth";
 import { getEntity } from "@/lib/catalog";
 import { safeReturnPath, roles } from "@/lib/domain";
+import {canonicalDecimal,fixed} from '@/lib/money';
+import {financeEntities} from '@/lib/finance-catalog';
 const uuid = z.string().uuid();
 function value(form: FormData, key: string) {
   return String(form.get(key) ?? "").trim();
@@ -77,6 +79,11 @@ export async function saveRecord(form: FormData) {
       else if (field.options) {
         if (!field.options.includes(raw)) throw new Error(`Invalid ${field.label}.`);
         payload[field.key] = raw;
+      } else if (field.type==='money'||field.type==='decimal'){
+        const scale=['discount','tax'].includes(field.key)?4:3;
+        payload[field.key]=canonicalDecimal(raw,scale);
+        if(field.key==='quantity' && fixed(raw)<=0n) throw new Error('Quantity must be positive.');
+        if(scale===4 && fixed(raw,4)>1000000n) throw new Error('Percentage cannot exceed 100.');
       } else if (field.type === "number") {
         const n = Number(raw);
         if (
@@ -106,6 +113,21 @@ export async function saveRecord(form: FormData) {
     )
       throw new Error("Use the field job actions.");
     const db = await supabase();
+    if(financeEntities.includes(entity)){
+      delete payload.status;
+      if(entity==='payments'){
+        let result;
+        if(id){delete payload.invoice_id;delete payload.name;result=await db.rpc('am_payment_adjust',{payment:id,payload,reverse:false,reason:value(form,'reason')});}
+        else {const invoice=payload.invoice_id;delete payload.invoice_id;result=await db.rpc('am_payment_record',{invoice,payload,request:uuid.parse(value(form,'request_id'))});}
+        if(result.error) throw new Error(result.error.message);
+        target=`/payments/${result.data}`;
+      }else{
+        if(entity==='work_order_part_financials') (payload as Record<string,unknown>).chargeable=payload.chargeable==='true';
+        const {data,error}=await db.rpc('am_finance_save',{entity,target:id||null,payload});
+        if(error) throw new Error(error.message);target=`/${entity}/${data}`;
+      }
+      revalidatePath('/', 'layout');
+    } else {
     const query = id
       ? db.from(entity).update(payload).eq("id", id)
       : db.from(entity).insert({ ...payload, tenant_id: profile.tenant_id });
@@ -119,11 +141,29 @@ export async function saveRecord(form: FormData) {
       title: `${meta.singular} ${id ? "updated" : "created"}`,
     });
     if (logError) console.error("Activity logging failed", logError.code);
+    }
     revalidatePath("/", "layout");
   } catch (error) {
     done(id ? target : `/${entity}/new`, cleanError(error), true);
   }
   done(target, "Record saved.");
+}
+export async function financeWorkflow(form:FormData){
+  let path=safeReturnPath(value(form,'return')||'/invoices');
+  try{
+    await requireProfile();const db=await supabase();const id=uuid.parse(value(form,'id'));const action=value(form,'action');let result;
+    if(action==='invoice-stage') result=await db.rpc('am_invoice_stage',{invoice:id,next_status:value(form,'next_status'),reason:value(form,'reason')||null});
+    else if(action==='payment-reverse') result=await db.rpc('am_payment_adjust',{payment:id,payload:{},reverse:true,reason:value(form,'reason')});
+    else if(action==='invoice-delete-item'){result=await db.rpc('am_finance_delete_item',{item:id});if(result.data)path=`/invoices/${result.data}`;}
+    else if(action==='variation-stage') result=await db.rpc('am_variation_stage',{variation:id,next_status:value(form,'next_status')});
+    else if(action==='service-approve') result=await db.rpc('am_service_approve',{charge:id});
+    else if(action==='service-invoice'){result=await db.rpc('am_service_invoice',{work:id,invoice_date:value(form,'invoice_date'),due_date:value(form,'due_date')});if(result.data) path=`/invoices/${result.data}`;}
+    else if(action==='approval-rule') result=await db.rpc('am_finance_config',{action_name:value(form,'rule'),role_name:value(form,'role'),enabled:value(form,'enabled')==='true',maximum:value(form,'maximum')||null});
+    else if(action==='project-grant') result=await db.rpc('am_project_finance_grant',{project:id,profile:uuid.parse(value(form,'profile')),can_view:form.has('can_view'),can_record_costs:form.has('can_record_costs'),can_approve:form.has('can_approve')});
+    else throw new Error('Unknown finance action.');
+    if(result.error) throw new Error(result.error.message);revalidatePath('/', 'layout');
+  }catch(error){done(path,cleanError(error),true);}
+  done(path,'Financial action recorded.');
 }
 export async function workflow(form: FormData) {
   const action = value(form, "action");

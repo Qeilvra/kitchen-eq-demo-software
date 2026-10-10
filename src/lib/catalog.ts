@@ -1,8 +1,9 @@
 import { assetCategories, projectCategories } from "./company";
+import {financeCatalog} from './finance-catalog';
 export type Field = {
   key: string;
   label: string;
-  type?: "text" | "textarea" | "number" | "date" | "datetime-local" | "email";
+  type?: "text" | "textarea" | "number" | "date" | "datetime-local" | "email" | "money" | "decimal";
   required?: boolean;
   options?: string[];
   ref?: string;
@@ -75,6 +76,7 @@ function entity(
   };
 }
 export const catalog: Record<string, Entity> = {
+  ...financeCatalog,
   customers: entity(
     "Customers",
     "Customer",
@@ -247,11 +249,11 @@ export const catalog: Record<string, Entity> = {
     "Itemized pricing in Omani Rial.",
     [
       r("quotation_id", "Quotation", "quotations", true),
-      num("quantity", "Quantity", 0.001),
+      {...num("quantity", "Quantity", 0.001),type:'decimal'},
       f("unit", "Unit", "text", true),
-      num("unit_price", "Unit price (OMR)"),
-      num("discount", "Discount (%)", 0, 100),
-      num("tax", "VAT (%)", 0, 100),
+      {...num("unit_price", "Unit price (OMR)"),type:'money'},
+      {...num("discount", "Discount (%)", 0, 100),type:'decimal'},
+      {...num("tax", "VAT (%)", 0, 100),type:'decimal'},
     ],
     ["Active"],
     ["quantity", "unit", "unit_price", "discount", "tax"],
@@ -593,6 +595,8 @@ export function fieldsFor(key: string): string {
       ...e.fields.map((f) => f.key),
       ...e.columns.filter((c) => !e.computed?.includes(c)),
       ...(key === "documents" ? ["storage_path", "mime_type", "size_bytes"] : []),
+      ...(key === 'quotations' ? ['subtotal','discount_amount','taxable_amount','tax_amount','grand_total','currency'] : []),
+      ...(key === 'quotation_items' ? ['line_subtotal','discount_amount','taxable_amount','tax_amount','line_total'] : []),
       ...(key === "notifications" || key === "activity_log"
         ? ["entity_type", "entity_id", "notes"]
         : []),

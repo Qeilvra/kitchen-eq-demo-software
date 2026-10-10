@@ -7,6 +7,9 @@ export const accounts = [
   { email: "sales@airmech.demo", name: "Fatma Al Lawati", role: "sales_admin" },
   { email: "service@airmech.demo", name: "Khalid Al Maamari", role: "service_manager" },
   { email: "engineer@airmech.demo", name: "Ahmed Rashid", role: "engineer" },
+  {email:'owner@airmech.demo',name:'Airmech Director',role:'owner_director'},
+  {email:'accounts@airmech.demo',name:'Accounts Team',role:'accounts_finance'},
+  {email:'projects@airmech.demo',name:'Project Manager',role:'project_manager'},
 ] as const;
 export type SeedRow = {
   id: string;
@@ -233,7 +236,7 @@ export function buildDataset(profiles: Record<string, string>, now = new Date())
           quotation_id: seedId(6, i),
           quantity: j === 0 ? 2 : 1,
           unit: "Each",
-          unit_price: [450 + i * 25, 120, 45][j],
+          unit_price: [(450n+BigInt(i)*25n).toString(),'120.000','45.000'][j],
           discount: j === 0 ? 5 : 0,
           tax: 5,
         },

@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import {financeEntities} from '@/lib/finance-catalog';
+import {FinanceRegister} from '@/components/finance-workspace';
 import { catalog, getEntity } from "@/lib/catalog";
 import { requireProfile } from "@/lib/auth";
 import { canAccess } from "@/lib/domain";
@@ -46,6 +48,7 @@ export default async function ListPage({
   const query = await searchParams;
   const profile = await requireProfile();
   if (!catalog[entity] || !canAccess(profile.role, entity)) notFound();
+  if(financeEntities.includes(entity)) return <FinanceRegister entity={entity} query={query} profile={profile}/>;
   const meta = getEntity(entity);
   const page = Math.max(1, Math.min(10000, Number.parseInt(query.page ?? "1", 10) || 1));
   const data = await listRecords(entity, {

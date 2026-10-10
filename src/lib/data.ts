@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 import { authorize } from "./auth";
 import { catalog, fieldsFor, getEntity } from "./catalog";
 import type { RecordRow } from "./domain";
+import {financeEntities} from './finance-catalog';
 export type Lookup = Record<
   string,
   {
@@ -30,6 +31,16 @@ export async function listRecords(
   const db = await supabase();
   const size = options.limit ?? 20;
   const page = Math.max(1, options.page ?? 1);
+  if([...financeEntities,'quotations','quotation_items'].includes(entity)){
+    const filters:Record<string,string>={};
+    if(options.q) filters.q=options.q;if(options.status) filters.status=options.status;
+    if(options.foreign && options.parent) filters[options.foreign]=options.parent;
+    const {data,error}=await db.rpc('am_finance_read',{entity,filters,page,size});
+    if(error) throw new Error('Unable to load financial records. Apply the finance migrations.');
+    const records=(data?.records??[]) as RecordRow[];
+    for(const row of records) if(row.effective_status) row.status=String(row.effective_status);
+    return {records,count:Number(data?.count??0),page,size};
+  }
   if (entity === "notifications") await db.rpc("am_sync_notifications");
   let query = db
     .from(entity)
@@ -105,6 +116,13 @@ export async function getRecord(entity: string, id: string) {
   getEntity(entity);
   await authorize(entity);
   const db = await supabase();
+  if([...financeEntities,'quotations','quotation_items'].includes(entity)){
+    const {data,error}=await db.rpc('am_finance_read',{entity,target:id});
+    if(error) throw new Error('Unable to load financial record.');
+    const row=data?.records?.[0] as RecordRow|undefined;
+    if(row?.effective_status) row.status=String(row.effective_status);
+    return row??null;
+  }
   const { data, error } = await db
     .from(entity)
     .select(fieldsFor(entity))

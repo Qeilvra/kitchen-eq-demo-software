@@ -6,6 +6,7 @@ import { PageHeader, Badge, Notice } from "@/components/records";
 import { Modal, Submit } from "@/components/ui";
 import { changeRole } from "@/app/actions";
 import { ShieldCheck, Globe, Building2, UserRoundCog } from "lucide-react";
+import {FinanceSettings} from '@/components/finance-settings';
 export default async function Settings({
   searchParams,
 }: {
@@ -123,6 +124,7 @@ export default async function Settings({
           </div>
         </section>
       )}
+      {profile.role==='super_admin'&&<FinanceSettings/>}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/auth";
 import { Shell, FieldShell } from "@/components/shell";
 import "./operations.css";
+import './finance.css';
 export default async function Workspace({ children }: { children: React.ReactNode }) {
   const profile = await requireProfile();
   return (

@@ -1,4 +1,5 @@
 import type { RecordRow } from "@/lib/domain";
+import {fixed} from '@/lib/money';
 
 export const chartColors = {
   blue: "#179FE3",
@@ -66,10 +67,10 @@ export function groupValues(
 }
 
 export function datedValues(rows: RecordRow[], key: string, value?: string): TrendPoint[] {
-  const groups = new Map<string, number>();
+  const groups = new Map<string, bigint>();
   rows.forEach((row) => {
     const date = dateKey(row[key]);
-    if (date) groups.set(date, (groups.get(date) ?? 0) + (value ? Number(row[value] ?? 0) : 1));
+    if (date) groups.set(date, (groups.get(date) ?? 0n) + (value ? fixed(String(row[value]??'0')) : 1000n));
   });
   return Array.from(groups)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -79,7 +80,8 @@ export function datedValues(rows: RecordRow[], key: string, value?: string): Tre
         month: "short",
         timeZone: "UTC",
       }).format(new Date(`${date}T12:00:00Z`)),
-      values: [Math.round(count * 1000) / 1000],
+      // Conversion is confined to chart coordinates; all amount aggregation is exact.
+      values: [Number(count) / 1000],
     }));
 }
 
@@ -103,15 +105,15 @@ export function expiryValues(rows: RecordRow[], key: string): ChartValue[] {
 }
 
 export function groupedAmounts(rows: RecordRow[], key: string, amount: string): ChartValue[] {
-  const groups = new Map<string, number>();
+  const groups = new Map<string, bigint>();
   rows.forEach((row) => {
     const label = String(row[key] ?? "Unspecified");
-    if (typeof row[amount] === "number")
-      groups.set(label, (groups.get(label) ?? 0) + Number(row[amount]));
+    if (row[amount]!==null&&row[amount]!==undefined)
+      groups.set(label, (groups.get(label) ?? 0n) + fixed(String(row[amount])));
   });
   return Array.from(groups, ([label, value]) => ({
     label,
-    value: Math.round(value * 1000) / 1000,
+    value: Number(value) / 1000,
     color: statusColor(label),
   })).sort((a, b) => b.value - a.value);
 }

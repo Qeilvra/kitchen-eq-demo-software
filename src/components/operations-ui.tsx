@@ -59,10 +59,12 @@ export function PanelHeader({
 export function DataPanel({
   title,
   count,
+  action,
   children,
 }: {
   title: string;
   count?: number;
+  action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -70,9 +72,9 @@ export function DataPanel({
       <PanelHeader
         title={title}
         action={
-          count !== undefined ? (
+          action ?? (count !== undefined ? (
             <span className="panel-count">{count.toLocaleString()} records</span>
-          ) : undefined
+          ) : undefined)
         }
       />
       {children}

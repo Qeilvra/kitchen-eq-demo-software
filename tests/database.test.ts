@@ -27,6 +27,7 @@ test("PostgreSQL migration, relational seed, RLS and complete sales/service/PM w
     await db.exec(migration.replace("create extension if not exists pgcrypto;", ""));
     await db.exec(await readFile("supabase/migrations/002_customer_activity.sql", "utf8"));
     await db.exec(await readFile("supabase/migrations/003_engineer_references.sql", "utf8"));
+    for(const file of ['004_commercial_finance','005_finance_workflows','006_financial_intelligence','007_finance_closeout','008_finance_grant_alignment'])await db.exec(await readFile(`supabase/migrations/${file}.sql`,'utf8'));
     const profiles: Record<string, string> = {};
     await db.query("insert into public.tenants values($1,'AIRMECH ONE Demo',true)", [DEMO_TENANT]);
     for (let i = 0; i < accounts.length; i++) {
@@ -293,7 +294,7 @@ test("PostgreSQL migration, relational seed, RLS and complete sales/service/PM w
       (await db.query("select * from public.customers where tenant_id=$1", [other])).rows.length,
       1,
     );
-    assert.equal((await db.query("select * from public.profiles")).rows.length, 5);
+    assert.equal((await db.query("select * from public.profiles")).rows.length, accounts.length);
   } catch (error) {
     const failure = error as { message: string; where?: string };
     throw new Error(`${failure.message}${failure.where ? ` (${failure.where})` : ""}`);

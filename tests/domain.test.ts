@@ -15,7 +15,7 @@ test("quotation totals apply item discount before VAT and retain OMR precision",
       { quantity: 2, unit_price: 450, discount: 5, tax: 5 },
       { quantity: 1, unit_price: 120, discount: 0, tax: 5 },
     ]),
-    { subtotal: 975, tax: 48.75, total: 1023.75 },
+    { subtotal: '975.000', tax: '48.750', total: '1023.750' },
   );
 });
 test("engineer role cannot access commercial data or user administration", () => {

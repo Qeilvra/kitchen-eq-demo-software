@@ -1,6 +1,8 @@
 import "server-only";
 import { supabase } from "@/lib/supabase";
-import { canAccess, quotationTotals, type Profile, type RecordRow } from "@/lib/domain";
+import { canAccess, type Profile, type RecordRow } from "@/lib/domain";
+import {addMoney} from '@/lib/money';
+import {MoneyBars} from './finance-charts';
 import type { Lookup } from "@/lib/data";
 import { derivedStatus } from "./records";
 import {
@@ -18,38 +20,17 @@ import {
   groupValues,
   datedValues,
   expiryValues,
-  groupedAmounts,
   type TrendPoint,
 } from "./chart-data";
 
 // Read-only UI projections. The existing record queries and workflow handlers remain intact.
 export async function quotationPresentation(rows: RecordRow[]) {
-  if (!rows.length) return rows;
-  const db = await supabase();
-  const all: {
-    quotation_id: string;
-    quantity: number;
-    unit_price: number;
-    discount: number;
-    tax: number;
-  }[] = [];
-  for (let page = 0; ; page++) {
-    const { data, error } = await db
-      .from("quotation_items")
-      .select("quotation_id,quantity,unit_price,discount,tax")
-      .in(
-        "quotation_id",
-        rows.map((row) => row.id),
-      )
-      .order("id")
-      .range(page * 1000, (page + 1) * 1000 - 1);
-    if (error) return rows;
-    all.push(...(data ?? []));
-    if (!data || data.length < 1000) break;
-  }
-  return rows.map((row) => ({
-    ...row,
-    quotation_amount: quotationTotals(all.filter((item) => item.quotation_id === row.id)).total,
+  const db=await supabase();
+  return Promise.all(rows.map(async row=>{
+    if(typeof row.grand_total==='string')return {...row,quotation_amount:row.grand_total};
+    const {data,error}=await db.rpc('am_finance_read',{entity:'quotations',target:row.id});
+    if(error)throw new Error('Unable to load persisted quotation totals.');
+    return {...row,quotation_amount:data?.records?.[0]?.grand_total??null};
   }));
 }
 
@@ -227,7 +208,7 @@ export function ServiceTrendPanel({
     <ChartPanel
       title="Service activity"
       question="How do opened and resolved cases compare over time?"
-      scope="Workspace · last 6 months"
+      scope="Workspace Â· last 6 months"
     >
       <TrendChart
         data={signals.trend}
@@ -282,44 +263,8 @@ export function ModuleInsights({
     );
   }
   if (entity === "quotations") {
-    const hasAmounts = rows.some((row) => typeof row.quotation_amount === "number");
-    const points = datedValues(rows, "quotation_date", "quotation_amount");
-    const hasTrend = hasAmounts && points.length > 1;
-    return (
-      <ChartPanel
-        title={
-          hasTrend
-            ? "Quotation value trend"
-            : hasAmounts
-              ? "Quotation value by status"
-              : "Quotation status"
-        }
-        question={
-          hasTrend
-            ? "How much value was quoted on each date?"
-            : hasAmounts
-              ? "How much quoted value is at each commercial stage?"
-              : "Which quotations need commercial attention?"
-        }
-        scope={scope}
-      >
-        {hasTrend ? (
-          <TrendChart
-            data={points}
-            series={[{ label: "Quoted value", color: chartColors.cyan, kind: "line" }]}
-          />
-        ) : hasAmounts ? (
-          <BarChart data={groupedAmounts(rows, "status", "quotation_amount")} unit="OMR" />
-        ) : (
-          <BarChart data={groupValues(rows, "status")} unit="quotations" />
-        )}
-        {hasAmounts && (
-          <p className="chart-footnote">
-            OMR · calculated from recorded line items, including VAT.
-          </p>
-        )}
-      </ChartPanel>
-    );
+    const amounts=new Map<string,string[]>();for(const row of rows){const status=row.status;amounts.set(status,[...(amounts.get(status)??[]),String(row.quotation_amount??row.grand_total??'0')]);}
+    return <MoneyBars title="Quotation value by stage" description="Persisted values including tax Â· current page / filter" values={[...amounts].map(([label,values])=>({label,value:addMoney(values)}))}/>;
   }
   if (entity === "projects") {
     const today = dateKey(new Date());
@@ -483,7 +428,7 @@ export function ModuleInsights({
         question="When are the next customer visits planned?"
         scope={
           maintenance
-            ? `${maintenance.count} workspace visits${maintenance.count > 1000 ? " · earliest 1,000 shown" : ""}`
+            ? `${maintenance.count} workspace visits${maintenance.count > 1000 ? " Â· earliest 1,000 shown" : ""}`
             : scope
         }
       >

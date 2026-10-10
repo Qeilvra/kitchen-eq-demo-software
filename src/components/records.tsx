@@ -17,6 +17,8 @@ import type { RecordRow } from "@/lib/domain";
 import type { Lookup } from "@/lib/data";
 import { recordLayouts, type RecordColumn } from "./record-layout";
 import { FilterSheet } from "./ui";
+import {moneyKeys} from '@/lib/finance-catalog';
+import {formatMoney} from '@/lib/money';
 export function Badge({ value }: { value: string | number | boolean | null | undefined }) {
   const text = String(value ?? "—");
   const style = /Emergency|High|Overdue|Expired|Rejected|Cancelled|Out of Service/.test(text)
@@ -49,14 +51,7 @@ export function formatDate(value: unknown, withTime = false) {
 export function display(entity: string, key: string, row: RecordRow, lookup: Lookup) {
   const field = getEntity(entity).fields.find((f) => f.key === key);
   const value = row[key];
-  if (key === "quotation_amount")
-    return typeof value === "number" ? (
-      <span className="money-value">
-        OMR {value.toLocaleString("en-OM", { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
-      </span>
-    ) : (
-      "—"
-    );
+  if(moneyKeys.has(key)) return <span className="money-value">{formatMoney(value)}</span>;
   if (key === "engineer_id" && !field?.ref) {
     const engineer = lookup.engineers?.find((record) => record.id === value);
     return engineer ? (
@@ -93,8 +88,6 @@ export function display(entity: string, key: string, row: RecordRow, lookup: Loo
         <span>{value ?? 0}%</span>
       </div>
     );
-  if (key === "unit_price")
-    return Number(value ?? 0).toLocaleString("en-OM", { minimumFractionDigits: 3 });
   return String(value ?? "—");
 }
 export function RecordTable({
@@ -129,13 +122,11 @@ export function RecordTable({
   const layout =
     recordLayouts[entity] ?? meta.columns.map((key) => ({ label: label(key), keys: [key] }));
   const columns = compact ? layout.slice(0, 2) : layout;
+  const mobileKeys = columns.map(column => column.keys[0]).filter(key => entity !== "invoices" || key !== "source_type").slice(0, 5);
   const plainValue = (key: string, row: RecordRow) => {
     const field = meta.fields.find((field) => field.key === key);
     const value = row[key];
-    if (key === "quotation_amount")
-      return typeof value === "number"
-        ? `OMR ${value.toLocaleString("en-OM", { minimumFractionDigits: 3, maximumFractionDigits: 3 })}`
-        : "—";
+    if(moneyKeys.has(key))return formatMoney(value);
     if (field?.ref) return lookup[field.ref]?.find((record) => record.id === value)?.name ?? "—";
     if (key === "engineer_id")
       return (
@@ -230,7 +221,7 @@ export function RecordTable({
             <dl className="mobile-record-context">
               {(entity === "customers"
                 ? ["type", "primary_contact", "sites_count", "equipment_count", "open_complaints"]
-                : columns.map((column) => column.keys[0]).slice(0, 5)
+                : mobileKeys
               ).map((key) => (
                 <div key={key}>
                   <dt>{label(key)}</dt>

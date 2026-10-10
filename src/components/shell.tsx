@@ -22,6 +22,7 @@ import {
   ListChecks,
   MoreHorizontal,
   MapPin,
+  Receipt,Wallet,Banknote,
 } from "lucide-react";
 import { Brand } from "./brand";
 import { SearchInput, MobileMenu, BellIcon } from "./ui";
@@ -45,6 +46,9 @@ export const navigation = [
     icon: CalendarClock,
     entity: "amc_contracts",
   },
+  { href:'/invoices',label:'Invoices',icon:Receipt,entity:'invoices'},
+  { href:'/payments',label:'Payments',icon:Wallet,entity:'payments'},
+  { href:'/receivables',label:'Receivables',icon:Banknote,entity:'receivables'},
   { href: "/reports", label: "Reports", icon: ChartNoAxesCombined, entity: null },
 ];
 const operationalTools = [
@@ -67,10 +71,10 @@ export function Shell({ profile, children }: { profile: Profile; children: React
   const nav = (
     <nav className="nav-list">
       {items.map(({ href, label, icon: Icon }) => (
-        <NavLink key={href} href={href}>
+        <div key={href}>{['/enquiries','/complaints','/invoices','/reports'].includes(href)&&<div className="nav-group-label">{href==='/enquiries'?'COMMERCIAL':href==='/complaints'?'SERVICE':href==='/invoices'?'FINANCE':'INTELLIGENCE'}</div>}<NavLink href={href}>
           <Icon size={21} />
           <span>{label}</span>
-        </NavLink>
+        </NavLink></div>
       ))}
       <NavLink href="/settings">
         <Settings size={21} />

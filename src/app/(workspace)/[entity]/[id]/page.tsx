@@ -18,7 +18,10 @@ import {
 } from "lucide-react";
 import { catalog, getEntity } from "@/lib/catalog";
 import { requireProfile } from "@/lib/auth";
-import { canAccess, quotationTotals, type RecordRow } from "@/lib/domain";
+import { canAccess,customerFinance, type RecordRow } from "@/lib/domain";
+import {financeEntities} from '@/lib/finance-catalog';
+import {FinanceDetail,LinkedFinancials} from '@/components/finance-workspace';
+import {formatMoney} from '@/lib/money';
 import { getRecord, listRecords, lookups, recordLookups, type Lookup } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 import {
@@ -152,6 +155,7 @@ export default async function Detail({
   const profile = await requireProfile();
   if (!catalog[entity] || !canAccess(profile.role, entity)) notFound();
   const meta = getEntity(entity);
+  if(financeEntities.includes(entity)) return <FinanceDetail entity={entity} id={id} query={query} profile={profile}/>;
   if (id === "new") {
     if (!meta.create || !canAccess(profile.role, entity, true)) notFound();
     const lookup = await lookups(meta.fields.filter((f) => f.ref).map((f) => f.ref!));
@@ -182,6 +186,8 @@ export default async function Detail({
   const lookup = await recordLookups(entity, [row]);
   const tabs = relatedTabs(entity).filter((t) => canAccess(profile.role, t.entity));
   const active = tabs.find((t) => t.entity === query.tab);
+  const financeVisible=(entity==='customers'&&customerFinance(profile.role))||(entity==='projects'&&canAccess(profile.role,'project_financials'))||(entity==='amc_contracts'&&canAccess(profile.role,'amc_financials'))||(entity==='work_orders'&&canAccess(profile.role,'service_charges'));
+  const financeActive=financeVisible&&query.tab==='financials';
   const tabData = active ? await childData(active, row) : null;
   const tabLookup = active && tabData ? await recordLookups(active.entity, tabData.records) : {};
   const dispatchable = ["super_admin", "management", "service_manager"].includes(profile.role);
@@ -326,7 +332,7 @@ export default async function Detail({
       {entity === "customers" && <CustomerSummary row={row} profile={profile} />}
       {entity === "quotations" && <QuotationSummary row={row} />}
       <nav className="record-tabs" aria-label="Record sections">
-        <Link className={!active ? "active" : ""} href={`/${entity}/${id}`}>
+        <Link className={!active&&!financeActive ? "active" : ""} href={`/${entity}/${id}`}>
           Overview
         </Link>
         {tabs.map((t) => (
@@ -339,7 +345,8 @@ export default async function Detail({
           </Link>
         ))}
       </nav>
-      {active && tabData ? (
+      {financeVisible&&<nav className="record-tabs" aria-label="Commercial access"><Link className={financeActive?'active':''} href={`/${entity}/${id}?tab=financials`}>{entity==='customers'?'Commercial / Financial':'Financials'}</Link></nav>}
+      {financeActive?<LinkedFinancials entity={entity} row={row} profile={profile}/>:active && tabData ? (
         <section className="panel">
           <div className="panel-heading">
             <h2>
@@ -640,35 +647,27 @@ async function CustomerRecent({
   );
 }
 async function QuotationSummary({ row }: { row: RecordRow }) {
-  const { records } = await listRecords("quotation_items", {
+  const { count } = await listRecords("quotation_items", {
     foreign: "quotation_id",
     parent: row.id,
     limit: 200,
   });
-  const totals = quotationTotals(
-    records.map((r) => ({
-      quantity: Number(r.quantity),
-      unit_price: Number(r.unit_price),
-      discount: Number(r.discount),
-      tax: Number(r.tax),
-    })),
-  );
   return (
     <div className="quotation-summary">
       <div>
         <span>Subtotal after discount</span>
-        <strong>OMR {totals.subtotal.toFixed(3)}</strong>
+        <strong>{formatMoney(row.taxable_amount)}</strong>
       </div>
       <div>
         <span>VAT</span>
-        <strong>OMR {totals.tax.toFixed(3)}</strong>
+        <strong>{formatMoney(row.tax_amount)}</strong>
       </div>
       <div className="quotation-total">
         <span>Total quotation value</span>
-        <strong>OMR {totals.total.toFixed(3)}</strong>
+        <strong>{formatMoney(row.grand_total)}</strong>
       </div>
       <Link href={`/quotations/${row.id}?tab=quotation_items`} className="text-link">
-        Manage {records.length} line items
+        Manage {count} line items
         <ArrowRight size={15} />
       </Link>
     </div>

@@ -8,6 +8,8 @@ import type { Lookup } from "@/lib/data";
 import { saveRecord } from "@/app/actions";
 import { Submit } from "./ui";
 import { FormSection } from "./operations-ui";
+import {financeEntities} from '@/lib/finance-catalog';
+import {calculateLine,formatMoney,addMoney} from '@/lib/money';
 export function RecordForm({
   entity,
   record,
@@ -60,7 +62,7 @@ export function RecordForm({
                 month: "2-digit",
                 day: "2-digit",
               }).format(new Date())
-            : field.type === "number"
+            : ['number','decimal','money'].includes(field.type??'') && field.required
               ? field.key === "tax"
                 ? "5"
                 : ["quantity", "planned_visits"].includes(field.key)
@@ -72,9 +74,16 @@ export function RecordForm({
     }
     return initial;
   });
+  const [requestId]=useState(()=>crypto.randomUUID());
+  let preview;
+  try{if(['quotation_items','invoice_items'].includes(entity)) preview=calculateLine({quantity:values.quantity,unit_price:values.unit_price,discount:values.discount,tax:values.tax});
+    if(entity==='cost_records') preview=calculateLine({quantity:values.quantity,unit_price:values.unit_cost,discount:'0',tax:'0'});
+    if(entity==='service_charges')preview=calculateLine({quantity:'1',unit_price:addMoney(['inspection_fee','labour_charge','parts_charge','other_charges'].map(k=>values[k]||'0').concat(String(record?.recorded_parts_charge??'0'))),discount:values.discount,tax:values.tax});
+  }catch{preview=undefined;}
   return (
     <form action={saveRecord} className="record-form">
       <input type="hidden" name="entity" value={entity} />
+      {entity==='payments' && <input type="hidden" name="request_id" value={requestId}/>}
       {record && <input type="hidden" name="id" value={record.id} />}
       <div className="form-sections">
         {groups.map((group) => (
@@ -159,7 +168,8 @@ export function RecordForm({
                   ) : (
                     <input
                       name={field.key}
-                      type={field.type ?? "text"}
+                      type={['money','decimal'].includes(field.type??'')?'text':field.type ?? "text"}
+                      inputMode={['money','decimal'].includes(field.type??'')?'decimal':undefined}
                       value={values[field.key]}
                       required={field.required}
                       min={field.min}
@@ -173,7 +183,7 @@ export function RecordForm({
             })}
           </FormSection>
         ))}
-        {!["quotations", "complaints"].includes(entity) && (
+        {!financeEntities.includes(entity) && !["quotations", "complaints"].includes(entity) && (
           <FormSection title="Workflow status">
             <label>
               <span>Status</span>
@@ -185,6 +195,8 @@ export function RecordForm({
             </label>
           </FormSection>
         )}
+        {preview && <FormSection title="Calculated amount"><div className="money-preview"><span>Subtotal <strong>{formatMoney(preview.subtotal)}</strong></span><span>Discount <strong>{formatMoney(preview.discount)}</strong></span><span>Tax <strong>{formatMoney(preview.tax)}</strong></span><span>Total <strong>{formatMoney(preview.total)}</strong></span></div></FormSection>}
+        {entity==='payments' && record && <FormSection title="Adjustment audit"><label><span>Reason for editing this payment</span><textarea name="reason" required rows={3}/></label></FormSection>}
       </div>
       <div className="form-actions">
         <Link className="button secondary" href={`/${entity}${record ? `/${record.id}` : ""}`}>

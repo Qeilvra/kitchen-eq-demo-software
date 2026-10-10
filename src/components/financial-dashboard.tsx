@@ -1,0 +1,19 @@
+import Link from 'next/link';
+import {financialOverview,financeRead} from '@/lib/finance';
+import {formatMoney,addMoney} from '@/lib/money';
+import {PageHeader,RecordTable} from './records';
+import {DataPanel} from './operations-ui';
+import {recordLookups} from '@/lib/data';
+import {MoneyBars,MoneyTrend} from './finance-charts';
+export function FinancialMetrics({metrics}:{metrics:{label:string;value:unknown;money?:boolean;context?:string}[]}){return <section className="financial-metrics">{metrics.map(m=><article key={m.label}><h3>{m.label}</h3><strong className={m.money?'monetary-kpi':''}>{m.money?formatMoney(m.value):String(m.value??'—')}</strong>{m.context&&<p>{m.context}</p>}</article>)}</section>;}
+export async function FinancialDashboard(){
+ const [summary,invoices,projects,amc]=await Promise.all([financialOverview(),financeRead('receivables',{},6),financeRead('project_financial_summary',{},8),financeRead('amc_financial_summary',{},20)]);
+ const lookup=await recordLookups('receivables',invoices.records);
+ const expiry=new Map<string,string[]>();for(const a of amc.records){if(!a.end_date||a.contract_value===null)continue;const m=String(a.end_date).slice(0,7);expiry.set(m,[...(expiry.get(m)??[]),String(a.contract_value)]);}
+ return <><PageHeader title="Business Overview" eyebrow="OWNER / DIRECTOR · COMPANY PERFORMANCE" description="A live view of commercial commitments, collections and operations across your business." module="dashboard" action={<Link className="button" href="/receivables">Review receivables</Link>}/>
+ <FinancialMetrics metrics={[{label:'Total customers',value:summary.customers},{label:'Open enquiries',value:summary.open_enquiries},{label:'Active projects',value:summary.active_projects},{label:'Open service cases',value:summary.open_cases},{label:'Outstanding receivables',value:summary.outstanding,money:true,context:`${summary.overdue_invoices} overdue invoices`},{label:'Revenue collected',value:summary.collected,money:true,context:'Unreversed payments · all time'},{label:'Quotation pipeline',value:summary.pipeline,money:true,context:'Open quotations, excluding approved / rejected / expired'},{label:'Active AMC contracts',value:summary.amc_contracts,context:`${summary.amc_expiring} expire within 30 days`}]}/>
+ <div className="financial-dashboard-grid"><MoneyTrend points={summary.trend} mode="line"/><MoneyTrend points={summary.trend}/><MoneyBars title="Receivables aging" description="Outstanding amounts grouped by days past due" values={summary.aging.map(a=>({label:a.bucket,value:a.amount,context:`${a.invoice_count} invoices`}))}/><MoneyBars title="Commercial commitments" description={`Approved quotations / all quotations: ${summary.conversion??'—'}% · these are separate measures, not additive revenue`} values={[{label:'Open quotation value',value:String(summary.pipeline)},{label:'Approved quotation value',value:String(summary.approved_value)},{label:'Active project contract value',value:String(summary.active_project_value)}]}/>
+ <DataPanel title="Outstanding invoices" count={invoices.count} action={<Link href="/receivables">View all</Link>}><RecordTable entity="receivables" rows={invoices.records} lookup={lookup}/></DataPanel>
+ <MoneyBars title="Largest recorded projects" description="Base contract value plus approved variations · recently created projects" values={projects.records.filter(p=>p.project_revenue!==null).sort((a,b)=>String(a.name).localeCompare(String(b.name))).map(p=>({label:p.name,value:String(p.project_revenue),context:String(p.project_status)}))}/><MoneyBars title="AMC expiry value" description="Recorded contract values grouped by expiry month · recent contracts" values={[...expiry.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([label,values])=>({label,value:addMoney(values)}))}/>
+ </div></>;
+}
