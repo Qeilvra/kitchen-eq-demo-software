@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useId } from "react";
 import { useFormStatus } from "react-dom";
 import {
   ArrowUpRight,
@@ -12,6 +12,7 @@ import {
   LoaderCircle,
   Printer,
   SlidersHorizontal,
+  MoreHorizontal,
 } from "lucide-react";
 export function Submit({
   children,
@@ -119,21 +120,41 @@ export function SearchInput({
     </form>
   );
 }
-export function MobileMenu({ children }: { children: React.ReactNode }) {
+export function MobileMenu({
+  children,
+  bottom = false,
+}: {
+  children: React.ReactNode;
+  bottom?: boolean;
+}) {
   const [open, setOpen] = useState(false);
+  const id = useId();
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [open]);
   return (
     <>
       <button
-        className="icon-button mobile-menu-toggle"
-        aria-label="Open navigation"
+        className={
+          bottom ? "mobile-menu-toggle bottom-more-toggle" : "icon-button mobile-menu-toggle"
+        }
+        aria-label={open ? "Close navigation" : "Open navigation"}
         aria-expanded={open}
+        aria-controls={id}
         onClick={() => setOpen(!open)}
       >
-        {open ? <X size={22} /> : <Menu size={22} />}
+        {open ? <X size={22} /> : bottom ? <MoreHorizontal size={22} /> : <Menu size={22} />}
+        {bottom && <span>More</span>}
       </button>
       {open && (
         <div
           className="mobile-more"
+          id={id}
           onClick={(event) => {
             if ((event.target as HTMLElement).closest("a")) setOpen(false);
           }}

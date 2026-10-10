@@ -17,6 +17,7 @@ import {
 import { UploadButton, WorkflowButton } from "@/components/workflow-panels";
 import { ArrowUpRight, Bell, Activity } from "lucide-react";
 import { operationalEvent } from "@/lib/company";
+import { ModuleSummary } from "@/components/design-system";
 export default async function ListPage({
   params,
   searchParams,
@@ -62,6 +63,12 @@ export default async function ListPage({
         }
       />
       <Notice success={query.success} error={query.error} />
+      <ModuleSummary
+        entity={entity}
+        rows={data.records}
+        count={data.count}
+        filtered={Boolean(query.q || query.status || query.parent)}
+      />
       {entity === "amc_contracts" && canAccess(profile.role, "pm_schedules") && (
         <div className="record-workflow-actions">
           <Link href="/pm_schedules" className="button secondary">

@@ -9,6 +9,7 @@ import type { RecordRow } from "@/lib/domain";
 import { recordLookups } from "@/lib/data";
 import { PageHeader, RecordTable } from "@/components/records";
 import { reports } from "@/lib/reports";
+import { ReportSummary } from "@/components/design-system";
 export default async function Reports({
   searchParams,
 }: {
@@ -47,11 +48,13 @@ export default async function Reports({
         }
       />
       <div className="reports-layout">
-        <nav className="report-nav">
+        <nav className="report-nav" aria-label="Report views">
+          <h2>Report library</h2>
           {available.map((r) => (
             <Link
               key={r.key}
               className={r.key === report.key ? "active" : ""}
+              aria-current={r.key === report.key ? "page" : undefined}
               href={`/reports?report=${r.key}`}
             >
               <FileBarChart2 size={17} />
@@ -65,11 +68,8 @@ export default async function Reports({
               <h2>{report.label}</h2>
               <p>{report.description}</p>
             </div>
-            <div>
-              <strong>{count ?? 0}</strong>
-              <span>matching records</span>
-            </div>
           </div>
+          <ReportSummary rows={rows} count={count ?? 0} entity={report.entity} />
           <RecordTable entity={report.entity} rows={rows} lookup={lookup} />
           <div className="pagination">
             <span>

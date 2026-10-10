@@ -22,6 +22,7 @@ import { formatDate, Badge, Empty } from "./records";
 import { initials } from "./shell";
 import type { Lookup } from "@/lib/data";
 import { lookups } from "@/lib/data";
+import { MetricCard } from "./design-system";
 type Summary = {
   enquiries: number;
   quotations: number;
@@ -269,15 +270,9 @@ export async function Dashboard({ profile }: { profile: Profile }) {
         </div>
       </section>
       <div className="kpi-grid">
-        {metrics.map(({ label, value, href, icon: Icon, context, color }) => (
-          <Link key={label} href={href} className={`kpi-card ${color}`}>
-            <div className="kpi-top">
-              <Icon size={19} />
-              <ArrowUpRight size={14} />
-            </div>
-            <strong>{value}</strong>
-            <span>{label}</span>
-            <small>{context}</small>
+        {metrics.map(({ label, value, href, icon, context, color }) => (
+          <Link key={label} href={href} className="metric-link">
+            <MetricCard label={label} value={value} icon={icon} context={context} tone={color} />
           </Link>
         ))}
       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./design-system.css";
 export const metadata: Metadata = {
   title: { default: "AIRMECH ONE · Operations Management System", template: "%s · AIRMECH ONE" },
   description:

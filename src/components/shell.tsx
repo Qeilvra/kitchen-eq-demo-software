@@ -21,6 +21,7 @@ import {
   House,
   ListChecks,
   MoreHorizontal,
+  MapPin,
 } from "lucide-react";
 import { Brand } from "./brand";
 import { SearchInput, MobileMenu, BellIcon } from "./ui";
@@ -67,12 +68,12 @@ export function Shell({ profile, children }: { profile: Profile; children: React
     <nav className="nav-list">
       {items.map(({ href, label, icon: Icon }) => (
         <NavLink key={href} href={href}>
-          <Icon size={17} />
+          <Icon size={21} />
           <span>{label}</span>
         </NavLink>
       ))}
       <NavLink href="/settings">
-        <Settings size={17} />
+        <Settings size={21} />
         <span>Admin</span>
       </NavLink>
       <details className="nav-tools">
@@ -116,10 +117,13 @@ export function Shell({ profile, children }: { profile: Profile; children: React
       <div className="main-shell">
         <header className="topbar">
           <MobileMenu>{nav}</MobileMenu>
-          <div className="topbar-context">
-            <span className="status-dot" /> AIRMECH workspace
-          </div>
+          <Link href="/dashboard" className="mobile-topbar-brand">
+            <Brand compact />
+          </Link>
           <SearchInput />
+          <div className="topbar-context">
+            <MapPin size={18} /> Oman operations
+          </div>
           <Link className="notification-button" href="/notifications" aria-label="Notifications">
             <BellIcon />
           </Link>
@@ -144,26 +148,23 @@ export function Shell({ profile, children }: { profile: Profile; children: React
         </footer>
       </div>
       <nav className="bottom-nav">
-        <Link href="/dashboard">
+        <NavLink href="/dashboard">
           <House size={20} />
           Overview
-        </Link>
-        <Link href="/customers">
+        </NavLink>
+        <NavLink href="/customers">
           <Users size={20} />
           Customers
-        </Link>
-        <Link href={canAccess(profile.role, "complaints") ? "/complaints" : "/enquiries"}>
+        </NavLink>
+        <NavLink href={canAccess(profile.role, "complaints") ? "/complaints" : "/enquiries"}>
           <Wrench size={20} />
           {canAccess(profile.role, "complaints") ? "Service Desk" : "Enquiries"}
-        </Link>
-        <Link href={canAccess(profile.role, "amc_contracts") ? "/amc_contracts" : "/quotations"}>
+        </NavLink>
+        <NavLink href={canAccess(profile.role, "amc_contracts") ? "/amc_contracts" : "/quotations"}>
           <CalendarClock size={20} />
           {canAccess(profile.role, "amc_contracts") ? "AMC / PM" : "Quotations"}
-        </Link>
-        <Link href="/settings">
-          <MoreHorizontal size={20} />
-          More
-        </Link>
+        </NavLink>
+        <MobileMenu bottom>{nav}</MobileMenu>
       </nav>
     </div>
   );
@@ -191,26 +192,26 @@ export function FieldShell({ profile, children }: { profile: Profile; children: 
       </header>
       <main>{children}</main>
       <nav className="bottom-nav">
-        <Link href="/field">
+        <NavLink href="/field">
           <House size={21} />
           Home
-        </Link>
-        <Link href="/work_orders">
+        </NavLink>
+        <NavLink href="/work_orders">
           <ListChecks size={21} />
           Jobs
-        </Link>
-        <Link href="/search">
+        </NavLink>
+        <NavLink href="/search">
           <Search size={21} />
           Search
-        </Link>
-        <Link href="/customers">
+        </NavLink>
+        <NavLink href="/customers">
           <Users size={21} />
           Customers
-        </Link>
-        <Link href="/settings">
+        </NavLink>
+        <NavLink href="/settings">
           <MoreHorizontal size={21} />
           More
-        </Link>
+        </NavLink>
       </nav>
     </div>
   );

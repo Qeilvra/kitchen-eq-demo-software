@@ -8,10 +8,14 @@ import {
   Search,
   ArrowRight,
   Inbox,
+  House,
+  ChevronRight as BreadcrumbChevron,
+  Users,
 } from "lucide-react";
 import { getEntity } from "@/lib/catalog";
 import type { RecordRow } from "@/lib/domain";
 import type { Lookup } from "@/lib/data";
+import { recordLayouts, type RecordColumn } from "./record-layout";
 export function Badge({ value }: { value: string | number | boolean | null | undefined }) {
   const text = String(value ?? "—");
   const style = /Emergency|High|Overdue|Expired|Rejected|Cancelled|Out of Service/.test(text)
@@ -44,6 +48,17 @@ export function formatDate(value: unknown, withTime = false) {
 export function display(entity: string, key: string, row: RecordRow, lookup: Lookup) {
   const field = getEntity(entity).fields.find((f) => f.key === key);
   const value = row[key];
+  if (key === "engineer_id" && !field?.ref) {
+    const engineer = lookup.engineers?.find((record) => record.id === value);
+    return engineer ? (
+      <Link className="reference-link" href={`/engineers/${engineer.id}`}>
+        {engineer.name}
+      </Link>
+    ) : (
+      <span>{value ? "Assigned" : "Unassigned"}</span>
+    );
+  }
+  if (key === "type") return <span className="type-chip">{String(value ?? "—")}</span>;
   if (field?.ref) {
     const reference = lookup[field.ref]?.find((r) => r.id === value);
     return reference ? (
@@ -92,23 +107,56 @@ export function RecordTable({
         detail="Add a record or adjust your filters to get started."
       />
     );
-  const columns = compact ? meta.columns.slice(0, 2) : meta.columns;
+  const label = (key: string) =>
+    columnLabels[key] ??
+    meta.fields.find((field) => field.key === key)?.label ??
+    key.replaceAll("_", " ");
+  const layout =
+    recordLayouts[entity] ?? meta.columns.map((key) => ({ label: label(key), keys: [key] }));
+  const columns = compact ? layout.slice(0, 2) : layout;
+  const plainValue = (key: string, row: RecordRow) => {
+    const field = meta.fields.find((field) => field.key === key);
+    const value = row[key];
+    if (field?.ref) return lookup[field.ref]?.find((record) => record.id === value)?.name ?? "—";
+    if (key === "engineer_id")
+      return (
+        lookup.engineers?.find((record) => record.id === value)?.name ??
+        (value ? "Assigned" : "Unassigned")
+      );
+    if (field?.type === "date" || field?.type === "datetime-local" || key.endsWith("_at"))
+      return formatDate(value, field?.type === "datetime-local");
+    if (key === "progress") return `${value ?? 0}%`;
+    return String(value ?? "—");
+  };
+  const cell = (column: RecordColumn, row: RecordRow) => (
+    <div className="record-cell">
+      {column.keys.map((key, index) => (
+        <div key={key} className={index ? "cell-secondary" : "cell-primary"}>
+          {(key.endsWith("_count") || ["active_projects", "open_complaints"].includes(key)) &&
+          column.keys.length > 1 ? (
+            <span className="cell-label">{label(key)}: </span>
+          ) : null}
+          {display(entity, key, row, lookup)}
+        </div>
+      ))}
+    </div>
+  );
   return (
     <>
-      <div className="table-wrap">
-        <table>
+      <div className={`table-wrap record-table record-table-${entity}`}>
+        <table aria-label={`${meta.label} records`}>
           <thead>
             <tr>
               <th>{meta.singular}</th>
-              {columns.map((key) => (
-                <th key={key}>
-                  {columnLabels[key] ??
-                    meta.fields.find((f) => f.key === key)?.label ??
-                    key.replaceAll("_", " ")}
+              {columns.map((column) => (
+                <th key={column.label} scope="col">
+                  {column.label}
                 </th>
               ))}
               <th>Status</th>
-              <th className="table-arrow" />
+              <th className="table-arrow">
+                <span className="sr-only">Actions</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -116,12 +164,12 @@ export function RecordTable({
               <tr key={row.id}>
                 <td>
                   <Link className="record-title" href={`/${entity}/${row.id}`}>
-                    <span className="record-code">{row.code}</span>
                     <strong>{row.name}</strong>
+                    <span className="record-code">{row.code}</span>
                   </Link>
                 </td>
-                {columns.map((key) => (
-                  <td key={key}>{display(entity, key, row, lookup)}</td>
+                {columns.map((column) => (
+                  <td key={column.label}>{cell(column, row)}</td>
                 ))}
                 <td>
                   <Badge value={derivedStatus(entity, row)} />
@@ -142,25 +190,44 @@ export function RecordTable({
       </div>
       <div className="mobile-record-list">
         {rows.map((row) => (
-          <Link key={row.id} className="mobile-record" href={`/${entity}/${row.id}`}>
+          <Link
+            key={row.id}
+            className={`mobile-record mobile-record-${entity}`}
+            href={`/${entity}/${row.id}`}
+          >
             <div className="record-card-top">
-              <span className="record-code">{row.code}</span>
+              {entity === "customers" && (
+                <span className="customer-card-icon">
+                  <Users size={23} />
+                </span>
+              )}
+              <div className="record-card-heading">
+                <h3>{row.name}</h3>
+                <span className="record-code">{row.code}</span>
+              </div>
               <Badge value={derivedStatus(entity, row)} />
             </div>
-            <h3>{row.name}</h3>
-            <div className="mobile-record-context">
-              {columns.slice(0, 3).map((key) => (
-                <span key={key}>
-                  {lookup[meta.fields.find((f) => f.key === key)?.ref ?? ""]?.find(
-                    (r) => r.id === row[key],
-                  )?.name ??
-                    (key.includes("date") || key.endsWith("_at")
-                      ? formatDate(row[key])
-                      : String(row[key] ?? ""))}
-                </span>
+            <dl className="mobile-record-context">
+              {(entity === "customers"
+                ? ["type", "primary_contact", "sites_count", "equipment_count", "open_complaints"]
+                : columns.map((column) => column.keys[0]).slice(0, 5)
+              ).map((key) => (
+                <div key={key}>
+                  <dt>{label(key)}</dt>
+                  <dd>
+                    {["priority", "classification"].includes(key) ? (
+                      <Badge value={row[key]} />
+                    ) : (
+                      plainValue(key, row)
+                    )}
+                  </dd>
+                </div>
               ))}
+            </dl>
+            <div className="record-card-footer">
+              <span>View {meta.singular.toLowerCase()}</span>
+              <ArrowRight size={18} />
             </div>
-            <ArrowRight size={17} className="record-card-arrow" />
           </Link>
         ))}
       </div>
@@ -219,7 +286,13 @@ export function PageHeader({
   return (
     <div className="page-header">
       <div>
-        {eyebrow && <div className="eyebrow">{eyebrow}</div>}
+        <div className="page-context">
+          <Link href="/dashboard" aria-label="Overview">
+            <House size={16} />
+          </Link>
+          <BreadcrumbChevron size={14} />
+          <span>{eyebrow ?? "Operations"}</span>
+        </div>
         <h1>{title}</h1>
         {description && <p>{description}</p>}
       </div>

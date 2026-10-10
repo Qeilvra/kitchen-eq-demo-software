@@ -65,7 +65,7 @@
 .header :global(.brand small) {
   margin-top: 6px;
   color: #e0eaf0;
-  font-size: 13px;
+  font-size: var(--font-secondary);
   font-weight: 400;
   letter-spacing: 0.15px;
 }
@@ -96,7 +96,7 @@
   display: block;
   margin-bottom: 15px;
   color: #075c73;
-  font-size: 11px;
+  font-size: var(--font-secondary);
   font-weight: 700;
   letter-spacing: 2px;
 }
@@ -123,7 +123,7 @@
 
 .notice :global(.notice) {
   margin: 23px 0 0;
-  font-size: 12px;
+  font-size: var(--font-secondary);
   line-height: 1.6;
 }
 
@@ -216,7 +216,7 @@
   padding-top: 19px;
   border-top: 1px solid #d6e0e7;
   color: #4c677c;
-  font-size: 13px;
+  font-size: var(--font-secondary);
   line-height: 1.5;
   text-align: center;
 }
@@ -299,11 +299,11 @@
   }
 
   .feature strong {
-    font-size: 11px;
+    font-size: var(--font-secondary);
   }
 
   .feature p {
-    font-size: 11px;
+    font-size: var(--font-secondary);
   }
 }
 
@@ -339,7 +339,7 @@
   }
 
   .introduction p {
-    font-size: 13px;
+    font-size: var(--font-secondary);
     line-height: 1.6;
   }
 
@@ -354,7 +354,7 @@
   }
 
   .form label > span:first-child {
-    font-size: 12px;
+    font-size: var(--font-secondary);
   }
 
   .card .submit {
@@ -365,7 +365,7 @@
   .security {
     margin-top: 18px;
     padding-top: 15px;
-    font-size: 11px;
+    font-size: var(--font-secondary);
   }
 
   .featureStrip {
@@ -384,7 +384,7 @@
 
   .feature strong,
   .feature p {
-    font-size: 11px;
+    font-size: var(--font-secondary);
   }
 }
 
@@ -424,7 +424,7 @@
   }
 
   .feature strong {
-    font-size: 12px;
+    font-size: var(--font-secondary);
   }
 }
 
@@ -461,7 +461,7 @@
 
   .header :global(.brand small) {
     margin-top: 4px;
-    font-size: 10px;
+    font-size: var(--font-secondary);
   }
 
   .centerStage {
@@ -475,7 +475,7 @@
 
   .eyebrow {
     margin-bottom: 12px;
-    font-size: 10px;
+    font-size: var(--font-secondary);
   }
 
   .introduction h1 {
@@ -484,7 +484,7 @@
   }
 
   .introduction p {
-    font-size: 13px;
+    font-size: var(--font-secondary);
     line-height: 1.7;
   }
 
@@ -510,7 +510,7 @@
 
   .security {
     gap: 6px;
-    font-size: 10px;
+    font-size: var(--font-secondary);
   }
 
   .featureStrip {
@@ -538,13 +538,13 @@
   }
 
   .feature strong {
-    font-size: 10px;
+    font-size: var(--font-secondary);
     line-height: 1.5;
   }
 
   .feature p {
     margin-top: 3px;
-    font-size: 9px;
+    font-size: var(--font-secondary);
     line-height: 1.65;
   }
 }
@@ -567,7 +567,7 @@
   display: block;
   margin-top: 4px;
   color: #a4e2eb;
-  font-size: 11px;
+  font-size: var(--font-secondary);
   line-height: 1.35;
   letter-spacing: 0.2px;
 }
@@ -576,20 +576,20 @@
     font-size: 26px;
   }
   .header :global(.brand-subtitle) {
-    font-size: 9px;
+    font-size: var(--font-secondary);
     margin-top: 2px;
   }
   .header :global(.brand small) {
-    font-size: 10px;
+    font-size: var(--font-secondary);
     margin-top: 3px;
   }
 }
 @media (max-width: 540px) {
   .header :global(.brand-subtitle) {
-    font-size: 8px;
+    font-size: var(--font-secondary);
     margin-top: 3px;
   }
   .header :global(.brand small) {
-    font-size: 8px;
+    font-size: var(--font-secondary);
   }
 }

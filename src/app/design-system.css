@@ -1,0 +1,1758 @@
+/* AIRMECH ONE operational UI. Shared by lists, details, forms and dashboards. */
+:root {
+  --navy: #0b2230;
+  --teal: #0f7484;
+  --accent: #14a3b8;
+  --teal-light: #eaf6f8;
+  --bg: #f4f7f8;
+  --border: #d9e4e8;
+  --text: #14242c;
+  --muted: #5b7280;
+  --success-accent: #19a56b;
+  --warning-accent: #e8a63a;
+  --danger-accent: #d95c5c;
+  /* Dark badge text keeps the requested status colors legible on light surfaces. */
+  --success: #13734c;
+  --warning: #805510;
+  --error: #a63d3d;
+  --font-body: 15px;
+  --font-secondary: 14px;
+  --font-label: 13px;
+  --radius: 8px;
+}
+body {
+  font-size: var(--font-body);
+  line-height: 1.55;
+}
+h1 {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+h2 {
+  font-size: 22px;
+  line-height: 1.35;
+}
+h3 {
+  font-size: 17px;
+  line-height: 1.4;
+}
+small,
+.muted {
+  font-size: var(--font-secondary);
+  color: var(--muted);
+}
+.eyebrow,
+.page-header .eyebrow,
+.record-hero .eyebrow {
+  font-size: 12px;
+}
+.button,
+.button.small {
+  min-height: 44px;
+  font-size: var(--font-body);
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.icon-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: white;
+}
+.text-link {
+  font-size: 14px;
+}
+.badge,
+.engineer-row .badge,
+.mini-record-end .badge,
+.overview-history .badge {
+  font-size: 13px;
+  padding: 5px 8px;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.badge > span {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+}
+.badge.success {
+  background: #e7f8ef;
+  border-color: #d3efe0;
+}
+.badge.warning {
+  background: #fff5e4;
+}
+.badge.danger {
+  background: #fceeee;
+}
+.badge.info {
+  background: #eaf4f9;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Navigation and workspace chrome */
+.sidebar {
+  width: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.main-shell {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  min-width: 0;
+}
+.brand-link {
+  padding: 24px 18px;
+  flex-shrink: 0;
+}
+.brand {
+  gap: 10px;
+}
+.brand-mark {
+  width: 40px;
+  height: 46px;
+  color: #20cee4;
+}
+.brand strong {
+  font-size: 22px;
+  letter-spacing: -0.35px;
+}
+.brand-one {
+  color: #20cee4;
+}
+.brand-subtitle {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #66d1df;
+}
+.brand small {
+  font-size: 12px;
+  color: #c0d2dc;
+  letter-spacing: 0;
+}
+.sidebar-caption {
+  font-size: 12px;
+  color: #9ab8c8;
+  padding: 20px 22px 14px;
+}
+.nav-list {
+  gap: 4px;
+  overflow-y: visible;
+  flex-shrink: 0;
+  padding: 0 12px;
+}
+.nav-list > a {
+  font-size: 15px;
+  min-height: 46px;
+  gap: 12px;
+  padding: 11px 12px;
+}
+.nav-list > a.active {
+  background: #0f7484;
+  box-shadow: inset 3px 0 #20cee4;
+  font-weight: 600;
+}
+.nav-list > a.active svg {
+  color: white;
+}
+.nav-list > a svg {
+  width: 21px;
+  height: 21px;
+  color: #bdd6e0;
+}
+.nav-tools {
+  margin-top: 16px;
+  border-top: 1px solid #ffffff20;
+  padding-top: 8px;
+}
+.nav-tools summary,
+.nav-tools a {
+  font-size: 14px;
+  padding: 12px;
+  white-space: normal;
+}
+.sidebar-bottom {
+  padding: 20px 22px;
+  flex-shrink: 0;
+}
+.workspace-indicator,
+.sidebar-bottom > a,
+.sidebar-services {
+  font-size: 14px;
+}
+.sidebar-services {
+  gap: 6px;
+}
+.sidebar-footer {
+  font-size: 12px;
+  color: #9ab8c8;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #19c58c;
+}
+.topbar {
+  height: 76px;
+  padding: 0 28px;
+  gap: 20px;
+  background: var(--navy);
+  color: white;
+  border-color: #143a4d;
+}
+.topbar-context {
+  font-size: 14px;
+  color: #d9e8ef;
+  border: 1px solid #45616e;
+  padding: 11px 14px;
+  border-radius: 6px;
+  margin-left: auto;
+}
+.topbar .notification-button {
+  color: #e2eff3;
+  margin-left: 0;
+  min-width: 40px;
+  height: 44px;
+}
+.topbar-divider {
+  border-color: #3c5665;
+}
+.profile-menu {
+  gap: 12px;
+}
+.profile-menu strong {
+  font-size: 14px;
+}
+.profile-menu small {
+  font-size: 13px;
+  color: #bcd2dc;
+}
+.profile-menu > svg {
+  color: #c1d3dd;
+}
+.avatar,
+.profile-menu .avatar,
+.engineer-row .avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+.mobile-topbar-brand {
+  display: none;
+}
+.page-content {
+  padding: 28px 28px 40px;
+}
+.main-footer {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 16px 28px;
+}
+
+/* Search owns its single border and focus ring; generic field rules never leak in. */
+.global-search,
+.list-search {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #f7fafb;
+  color: var(--muted);
+  max-width: none;
+}
+.global-search {
+  flex: 1;
+  max-width: 560px;
+  width: auto;
+}
+.global-search input,
+.global-search.large input,
+.list-search input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.global-search input:focus,
+.list-search input:focus {
+  outline: none;
+  box-shadow: none;
+}
+.global-search:focus-within,
+.list-search:focus-within {
+  border-color: var(--teal);
+  outline: 3px solid #14a3b82a;
+  outline-offset: 2px;
+}
+.global-search input::placeholder,
+.list-search input::placeholder {
+  color: #5b7280;
+  opacity: 1;
+}
+.global-search > svg,
+.list-search > svg {
+  width: 20px;
+  height: 20px;
+}
+.global-search .search-submit {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+.topbar .global-search {
+  background: #223f51;
+  border-color: #3b586a;
+  color: #d6e6ee;
+}
+.topbar .global-search input {
+  color: white;
+}
+.topbar .global-search input::placeholder {
+  color: #d2e1ea;
+}
+.topbar .global-search:focus-within {
+  border-color: #20cee4;
+  outline-color: #20cee433;
+}
+.global-search.large {
+  width: 100%;
+  height: 50px;
+  max-width: 800px;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 20px;
+  background: white;
+}
+.filters .list-search {
+  flex: 1 1 280px;
+  max-width: none;
+}
+.filters select {
+  height: 46px;
+  min-height: 46px;
+  max-width: 220px;
+  font-size: 15px;
+  width: auto;
+}
+.filters .button {
+  height: 46px;
+  min-height: 46px;
+}
+
+/* Page composition and metrics */
+.page-header {
+  position: relative;
+  min-height: 152px;
+  padding: 24px;
+  background: linear-gradient(110deg, #eaf6f8, #f4f7f8 78%);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.page-header > div:first-child {
+  min-width: 0;
+}
+.page-header h1 {
+  font-size: 34px;
+}
+.page-header p {
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 780px;
+}
+.page-context {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  color: #486877;
+}
+.page-context a {
+  display: flex;
+  color: var(--teal);
+}
+.page-actions {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.panel {
+  box-shadow: 0 2px 5px #0b223003;
+  min-width: 0;
+}
+.panel-heading,
+.airmech-overview .panel-heading {
+  background: #f8fbfc;
+  color: var(--text);
+  padding: 20px;
+  min-height: 66px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.panel-heading h2 {
+  font-size: 20px;
+}
+.airmech-overview .panel-heading .text-link {
+  color: var(--teal);
+}
+.airmech-overview .panel-heading .muted {
+  color: var(--muted);
+}
+.panel-heading .button {
+  font-size: 14px;
+}
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.metric-card {
+  --metric-color: var(--teal);
+  --metric-surface: #eaf6f8;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+  padding: 20px 16px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--metric-color);
+  border-radius: 7px;
+  background: white;
+}
+.metric-blue {
+  --metric-color: #2f6f8f;
+  --metric-surface: #eaf4fc;
+}
+.metric-green {
+  --metric-color: #19a56b;
+  --metric-surface: #e7f8ef;
+}
+.metric-amber {
+  --metric-color: #e8a63a;
+  --metric-surface: #fff5e4;
+}
+.metric-red {
+  --metric-color: #d95c5c;
+  --metric-surface: #fceeee;
+}
+.metric-violet {
+  --metric-color: #8262ca;
+  --metric-surface: #f0ebfc;
+}
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--metric-surface);
+  color: var(--metric-color);
+}
+.metric-content {
+  min-width: 0;
+}
+.metric-content h3 {
+  font-size: 15px;
+  font-weight: 500;
+}
+.metric-content > strong {
+  display: block;
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 6px 0;
+  font-variant-numeric: tabular-nums;
+}
+.metric-content p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.metric-link {
+  display: block;
+  min-width: 0;
+}
+.metric-link .metric-card {
+  height: 100%;
+}
+.metric-link:hover .metric-card {
+  border-color: var(--teal);
+}
+
+/* Tables share a readable, restrained hierarchy. */
+table {
+  font-size: 15px;
+}
+th {
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 15px 14px;
+  background: #edf5f7;
+  color: #486674;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: normal;
+}
+td {
+  padding: 18px 14px;
+  line-height: 1.5;
+  color: #385565;
+}
+tbody tr:nth-child(even) {
+  background: #fbfdfe;
+}
+tbody tr:hover {
+  background: #eaf6f85c;
+}
+.record-table table {
+  table-layout: fixed;
+}
+.record-table th:first-child {
+  width: 24%;
+}
+.record-table th:nth-last-child(2) {
+  width: 132px;
+}
+.record-table th:last-child {
+  width: 72px;
+}
+.record-table td {
+  overflow-wrap: anywhere;
+  max-width: none;
+}
+.record-title {
+  min-width: 0;
+  max-width: none;
+  gap: 6px;
+}
+.record-title strong {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.record-code {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.reference-link {
+  font-size: 14px;
+  max-width: none;
+  color: #315f75;
+}
+.record-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cell-secondary {
+  font-size: 14px;
+  color: var(--muted);
+}
+.cell-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+.type-chip {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-radius: 4px;
+  color: #246079;
+  background: #eaf4fb;
+}
+.pagination {
+  font-size: 14px;
+  padding: 18px 20px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.pagination > div {
+  flex-wrap: wrap;
+}
+.pagination .button {
+  min-height: 40px;
+  font-size: 14px;
+}
+.progress-inline {
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+.progress-inline > div {
+  height: 6px;
+  max-width: 100%;
+}
+
+/* Existing detail and edit workflows use the same scale. */
+input,
+select,
+textarea {
+  font-size: 15px;
+  min-height: 46px;
+  border-color: var(--border);
+  padding: 11px 13px;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #5b7280;
+}
+label > span,
+.record-form label > span {
+  font-size: 14px;
+}
+.record-form,
+.detail-fields,
+.padded {
+  padding: 24px;
+}
+.form-grid {
+  gap: 24px;
+}
+.record-form input,
+.record-form select,
+.record-form textarea {
+  font-size: 15px;
+  min-height: 46px;
+}
+.record-hero {
+  padding: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: linear-gradient(110deg, white, #eaf6f8);
+}
+.record-hero > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.record-hero h1 {
+  font-size: 30px;
+  overflow-wrap: anywhere;
+}
+.record-hero-meta {
+  font-size: 14px;
+}
+.record-hero-actions {
+  max-width: none;
+  gap: 12px;
+}
+.record-tabs > a {
+  font-size: 15px;
+  padding: 14px 16px;
+}
+.detail-fields dt {
+  font-size: 14px;
+}
+.detail-fields dd,
+.context-list .reference-link {
+  font-size: 15px;
+}
+.customer-metrics {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.customer-metrics > a {
+  flex-wrap: wrap;
+  padding: 18px;
+}
+.customer-metrics span {
+  font-size: 14px;
+  flex-basis: 100%;
+  margin-left: 0;
+}
+.customer-metrics strong {
+  font-size: 28px;
+}
+.modal {
+  width: min(720px, calc(100% - 32px));
+}
+.modal header h2 {
+  font-size: 22px;
+}
+.form-actions,
+.job-secondary-actions,
+.record-workflow-actions {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.quotation-summary {
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.quotation-summary span {
+  font-size: 14px;
+}
+.quotation-summary strong {
+  font-size: 24px;
+}
+.service-report section h3 {
+  font-size: 18px;
+}
+.service-report section p,
+.report-identifiers strong,
+.report-identifiers a {
+  font-size: 15px;
+}
+.account-heading h2 {
+  font-size: 22px;
+}
+.settings-grid p,
+.setting-row strong {
+  font-size: 15px;
+}
+.setting-row {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #f8fbfc;
+  margin-top: 16px;
+}
+.account-user-name {
+  min-width: 0;
+}
+.notification-row {
+  gap: 16px;
+}
+.notification-row strong {
+  font-size: 15px;
+}
+.notification-row > a:nth-child(2) {
+  min-width: 0;
+}
+
+/* Overview and dispatch: comfortable density at every screen width. */
+.airmech-overview .dashboard-welcome {
+  min-height: 152px;
+  padding: 24px;
+  background: linear-gradient(110deg, #eaf6f8, #f4f7f8);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+.airmech-overview .dashboard-welcome h1 {
+  font-size: 34px;
+}
+.airmech-overview .dashboard-welcome .eyebrow {
+  font-size: 12px;
+}
+.dashboard-welcome p {
+  font-size: 15px;
+  max-width: 680px;
+}
+.kpi-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0 0 24px;
+}
+.airmech-overview .kpi-card {
+  min-height: 158px;
+  padding: 20px;
+  border-left-width: 4px;
+}
+.airmech-overview .kpi-card > span {
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.airmech-overview .kpi-card > strong {
+  font-size: 32px;
+  color: var(--text);
+}
+.airmech-overview .kpi-card > small {
+  font-size: 13px;
+  color: var(--muted);
+}
+.kpi-top svg:first-child {
+  width: 24px;
+  height: 24px;
+}
+.dashboard-main-grid,
+.dashboard-lower-grid,
+.dashboard-summary-grid,
+.dashboard-bottom-grid {
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.airmech-overview .dashboard-main-grid,
+.dashboard-summary-grid,
+.dashboard-lower-grid,
+.airmech-overview .dashboard-bottom-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.airmech-overview .dashboard-main-grid > .panel:last-child,
+.dashboard-summary-grid > .panel:last-child,
+.dashboard-lower-grid > .panel:last-child {
+  grid-column: 1 / -1;
+}
+.airmech-overview .dashboard-main-grid > .complaint-panel:last-child {
+  grid-column: auto;
+}
+.airmech-overview .dashboard-main-grid > .engineer-panel {
+  grid-column: 1 / -1;
+}
+.airmech-overview .dashboard-main-grid .panel {
+  min-height: 0;
+}
+.dashboard-section-title {
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.dashboard-section-title h2 {
+  font-size: 22px;
+}
+.dashboard-section-title > div {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dashboard-section-title .button {
+  font-size: 14px;
+}
+.engineer-list {
+  padding: 0 20px;
+}
+.engineer-row {
+  padding: 18px 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.engineer-row > div {
+  min-width: 100px;
+}
+.engineer-row strong {
+  font-size: 15px;
+}
+.engineer-row > div span {
+  font-size: 14px;
+}
+.mini-records {
+  padding: 0 20px 8px;
+}
+.mini-records > a {
+  padding: 18px 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mini-records > a > div:not(.mini-record-end) {
+  min-width: 120px;
+}
+.mini-records strong,
+.mini-records span:not(.badge) {
+  font-size: 15px;
+}
+.mini-records small,
+.mini-record-end time {
+  font-size: 14px;
+}
+.mini-record-end {
+  min-width: 0;
+}
+.activity-feed > a {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.activity-feed strong {
+  font-size: 15px;
+}
+.activity-feed time {
+  font-size: 13px;
+}
+.urgent-strip {
+  padding: 16px;
+  font-size: 15px;
+  flex-wrap: wrap;
+}
+.urgent-strip > span {
+  font-size: 14px;
+}
+.overview-record-heading {
+  padding: 20px;
+  flex-wrap: wrap;
+}
+.overview-record-heading strong {
+  font-size: 16px;
+}
+.overview-record-heading small {
+  font-size: 14px;
+}
+.overview-record-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0 20px 20px;
+}
+.overview-record-metrics > div,
+.overview-record-metrics > a {
+  padding: 16px 10px;
+}
+.overview-record-metrics > :not(:first-child) {
+  border-left: 0;
+}
+.overview-record-metrics > :nth-child(even) {
+  border-left: 1px solid var(--border);
+}
+.overview-record-metrics > :nth-child(n + 3) {
+  border-top: 1px solid var(--border);
+}
+.overview-record-metrics small {
+  font-size: 13px;
+  text-transform: none;
+}
+.overview-record-metrics strong {
+  font-size: 16px;
+}
+.overview-history {
+  padding: 0 20px 12px;
+}
+.overview-history > a {
+  flex-wrap: wrap;
+  font-size: 14px;
+  gap: 10px;
+  padding: 14px 0;
+}
+.overview-history strong {
+  font-size: 14px;
+  min-width: 120px;
+}
+.pipeline-stages {
+  padding: 24px 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.pipeline-stages small {
+  font-size: 14px;
+}
+.pipeline-note {
+  font-size: 14px;
+  padding: 0 20px 20px;
+}
+.complaint-chart {
+  gap: 24px;
+  padding: 24px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.donut {
+  min-width: 140px;
+  max-width: 160px;
+  flex-basis: 140px;
+}
+.donut-legend {
+  display: flex;
+  min-width: 150px;
+  gap: 14px;
+}
+.donut-legend > a {
+  font-size: 14px;
+}
+.donut-legend strong {
+  font-size: 15px;
+}
+.chart-legend,
+.chart-footer {
+  font-size: 14px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.activity-chart svg {
+  height: auto;
+  min-height: 190px;
+}
+.activity-chart text {
+  font-size: 13px;
+  fill: #486674;
+}
+.renewal-panel h3 {
+  font-size: 20px;
+}
+.renewal-panel p {
+  font-size: 15px;
+}
+.dispatch-metrics {
+  gap: 16px;
+}
+.dispatch-metrics > div {
+  padding: 20px;
+  flex-wrap: wrap;
+}
+.dispatch-metrics span {
+  font-size: 14px;
+  flex-basis: 100%;
+  margin-left: 0;
+}
+.dispatch-jobs,
+.assigned-job-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.dispatch-job h3 {
+  font-size: 17px;
+}
+.dispatch-job p,
+.dispatch-job footer {
+  font-size: 14px;
+}
+.dispatch-job footer {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.dispatch-engineers strong {
+  font-size: 15px;
+}
+
+/* Reports and system pages */
+.reports-layout {
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 24px;
+}
+.report-nav {
+  align-self: start;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.report-nav h2 {
+  font-size: 18px;
+  padding: 8px 12px 16px;
+}
+.report-nav > a {
+  font-size: 15px;
+  padding: 14px 12px;
+  white-space: normal;
+  align-items: flex-start;
+}
+.report-nav > a.active {
+  background: var(--teal-light);
+  border-color: #c4e2e8;
+}
+.report-header {
+  padding: 24px;
+  background: #f8fbfc;
+}
+.report-header h2 {
+  font-size: 24px;
+}
+.report-header p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.report-header > div:last-child {
+  text-align: left;
+}
+.report-summary {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.6fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.report-total {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.report-total > span {
+  font-size: 15px;
+}
+.report-total > strong {
+  font-size: 36px;
+  line-height: 1.2;
+  color: var(--teal);
+}
+.report-breakdown h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.report-status {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(50px, 1fr) 24px;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+.report-status-track {
+  height: 7px;
+  background: var(--teal-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.report-status-track i {
+  display: block;
+  height: 100%;
+  background: var(--teal);
+}
+.search-results strong {
+  font-size: 16px;
+}
+.help-steps h2 {
+  font-size: 20px;
+}
+.help-steps p {
+  font-size: 15px;
+}
+.field-header .brand strong {
+  font-size: 20px;
+}
+.field-header {
+  gap: 12px;
+  padding: 0 16px;
+}
+.field-header > a:first-child {
+  min-width: 0;
+}
+.field-header .brand-mark {
+  width: 30px;
+  height: 36px;
+}
+.field-header .brand-subtitle,
+.field-header .brand small {
+  display: none;
+}
+.field-header .icon-button {
+  background: transparent;
+  border-color: #ffffff30;
+}
+.field-shell .record-hero h1 {
+  font-size: 28px;
+}
+.field-shell .bottom-nav {
+  position: fixed;
+  bottom: 0;
+  min-height: 80px;
+  height: auto;
+  padding: 10px 12px max(10px, env(safe-area-inset-bottom));
+  align-items: center;
+  justify-content: space-around;
+}
+.field-shell .bottom-nav > a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #d1e2eb;
+  flex: 1;
+  text-align: center;
+}
+.field-shell .bottom-nav > a.active {
+  color: #20cee4;
+}
+.field-shell main {
+  padding: 24px 20px;
+}
+.field-welcome p,
+.field-welcome > span {
+  font-size: 15px;
+}
+.field-job-card h3 {
+  font-size: 17px;
+}
+
+/* Record-card structure also applies to narrower report content panels. */
+.mobile-record-list {
+  padding: 16px;
+  gap: 12px;
+}
+.mobile-record {
+  padding: 18px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text);
+}
+.mobile-record:last-child {
+  border: 1px solid var(--border);
+}
+.record-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.record-card-heading {
+  flex: 1;
+  min-width: 0;
+}
+.record-card-heading h3 {
+  padding: 0;
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.record-card-top > .badge {
+  flex-shrink: 0;
+  max-width: 120px;
+}
+.customer-card-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: var(--teal-light);
+  color: var(--teal);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.mobile-record-context {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  padding: 0;
+  margin: 0;
+}
+.mobile-record-context dt {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.mobile-record-context dd {
+  font-size: 15px;
+  color: #294857;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.record-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e8edef;
+  padding-top: 12px;
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal);
+}
+
+@media (min-width: 1500px) {
+  .kpi-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .airmech-overview .dashboard-main-grid,
+  .dashboard-summary-grid,
+  .dashboard-lower-grid,
+  .airmech-overview .dashboard-bottom-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .airmech-overview .dashboard-main-grid > .panel:last-child,
+  .airmech-overview .dashboard-main-grid > .engineer-panel,
+  .dashboard-summary-grid > .panel:last-child,
+  .dashboard-lower-grid > .panel:last-child,
+  .airmech-overview .renewal-panel {
+    grid-column: auto;
+  }
+}
+@media (max-width: 1200px) {
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .topbar-context,
+  .profile-menu > span:not(.avatar),
+  .profile-menu > svg {
+    display: none;
+  }
+  .topbar .global-search {
+    max-width: none;
+  }
+  .notification-button {
+    margin-left: auto;
+  }
+  .reports-layout {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+}
+@media (max-width: 1400px) {
+  .reports-layout .table-wrap {
+    display: none;
+  }
+  .reports-layout .mobile-record-list {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 1024px) {
+  .sidebar {
+    display: none;
+  }
+  .main-shell {
+    margin-left: 0;
+    width: 100%;
+  }
+  .mobile-menu-toggle {
+    display: inline-flex;
+    color: white;
+    background: transparent;
+    border: 0;
+    flex-shrink: 0;
+  }
+  .mobile-more {
+    position: fixed;
+    inset: 76px 0 auto;
+    max-height: calc(100dvh - 160px);
+    overflow: auto;
+    background: var(--navy);
+    color: white;
+    z-index: 50;
+    padding: 20px;
+    box-shadow: 0 8px 24px #0b223020;
+  }
+  .mobile-more .nav-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .mobile-more .nav-list > a {
+    font-size: 15px;
+    white-space: normal;
+  }
+  .mobile-more .nav-tools {
+    grid-column: 1 / -1;
+  }
+  .topbar-context {
+    display: flex;
+  }
+}
+@media (max-width: 900px) {
+  .table-wrap {
+    display: none;
+  }
+  .mobile-record-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .record-card-top {
+    flex-wrap: wrap;
+  }
+  .record-card-top > .badge {
+    max-width: none;
+  }
+  .reports-layout {
+    grid-template-columns: 1fr;
+  }
+  .report-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .report-nav h2 {
+    grid-column: 1 / -1;
+    padding-bottom: 8px;
+  }
+  .report-nav > a {
+    border-color: var(--border);
+  }
+  .reports-layout .mobile-record-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .welcome-date {
+    display: none;
+  }
+  .page-header {
+    align-items: flex-start;
+  }
+}
+@media (max-width: 760px) {
+  h1,
+  .page-header h1,
+  .airmech-overview .dashboard-welcome h1,
+  .field-shell .page-header h1 {
+    font-size: 28px;
+  }
+  h2,
+  .panel-heading h2,
+  .dashboard-section-title h2 {
+    font-size: 20px;
+  }
+  .main-shell {
+    padding-bottom: 84px;
+  }
+  .topbar {
+    height: auto;
+    min-height: 68px;
+    padding: 12px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .topbar > .global-search {
+    order: 5;
+    flex-basis: 100%;
+    max-width: none;
+    width: 100%;
+  }
+  .topbar-context {
+    display: none;
+  }
+  .mobile-topbar-brand {
+    display: block;
+    flex: 1;
+    min-width: 0;
+  }
+  .mobile-topbar-brand .brand-mark {
+    width: 30px;
+    height: 36px;
+  }
+  .mobile-topbar-brand .brand strong {
+    font-size: 19px;
+  }
+  .mobile-topbar-brand .brand small,
+  .mobile-topbar-brand .brand-subtitle {
+    display: none;
+  }
+  .topbar .notification-button {
+    min-width: 30px;
+  }
+  .profile-menu .avatar {
+    width: 36px;
+    height: 36px;
+  }
+  .page-content {
+    padding: 20px 16px 28px;
+  }
+  .page-header {
+    padding: 20px;
+    min-height: 0;
+    flex-direction: column;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+  .page-header p {
+    font-size: 15px;
+  }
+  .page-actions {
+    width: 100%;
+  }
+  .page-actions .button {
+    min-height: 46px;
+    font-size: 15px;
+    flex: 1;
+    white-space: normal;
+  }
+  .stats-strip {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .metric-card {
+    padding: 16px 12px;
+    gap: 10px;
+    flex-direction: column;
+  }
+  .metric-icon {
+    display: none;
+  }
+  .metric-icon svg {
+    width: 21px;
+    height: 21px;
+  }
+  .metric-content h3 {
+    font-size: 14px;
+  }
+  .metric-content > strong {
+    font-size: 28px;
+  }
+  .metric-content p {
+    font-size: 13px;
+  }
+  .filters {
+    padding: 16px;
+    gap: 12px;
+  }
+  .filters .list-search {
+    flex-basis: 100%;
+    height: 46px;
+  }
+  .filters select {
+    flex: 1;
+    max-width: none;
+    min-width: 0;
+  }
+  .filters .button {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+  .mobile-record-list,
+  .reports-layout .mobile-record-list {
+    grid-template-columns: 1fr;
+  }
+  .mobile-record-context {
+    gap: 12px;
+  }
+  .record-card-top {
+    flex-wrap: nowrap;
+  }
+  .record-card-heading h3 {
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .record-card-top > .badge {
+    max-width: 120px;
+  }
+  .pagination {
+    padding: 16px;
+    font-size: 14px;
+    align-items: flex-start;
+  }
+  .pagination > div {
+    gap: 10px;
+  }
+  .bottom-nav {
+    display: flex;
+    height: auto;
+    min-height: 78px;
+    background: var(--navy);
+    border-color: #163f51;
+    padding: 9px 6px max(9px, env(safe-area-inset-bottom));
+  }
+  .bottom-nav > a,
+  .bottom-more-toggle {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #d1e2eb;
+    text-align: center;
+    padding: 4px 1px;
+    line-height: 1.3;
+  }
+  .bottom-more-toggle {
+    background: none;
+    border: 0;
+    font-family: inherit;
+  }
+  .bottom-nav > a:first-child {
+    color: #d1e2eb;
+  }
+  .bottom-nav > a.active {
+    color: #20cee4;
+  }
+  .mobile-more {
+    top: 126px;
+    max-height: calc(100dvh - 210px);
+  }
+  .mobile-more .nav-list {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+  .mobile-more .nav-list > a {
+    padding: 12px;
+    font-size: 16px;
+  }
+  .main-footer {
+    display: none;
+  }
+  .airmech-overview .dashboard-welcome {
+    padding: 20px;
+    min-height: 0;
+    margin-bottom: 20px;
+  }
+  .dashboard-welcome p {
+    font-size: 15px;
+    max-width: none;
+  }
+  .airmech-overview .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .airmech-overview .kpi-card {
+    padding: 16px;
+    min-height: 165px;
+  }
+  .airmech-overview .kpi-card > span {
+    font-size: 14px;
+  }
+  .airmech-overview .dashboard-main-grid,
+  .dashboard-summary-grid,
+  .dashboard-lower-grid,
+  .airmech-overview .dashboard-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .airmech-overview .dashboard-main-grid > .panel:last-child,
+  .airmech-overview .dashboard-main-grid > .engineer-panel,
+  .dashboard-summary-grid > .panel:last-child,
+  .dashboard-lower-grid > .panel:last-child {
+    grid-column: auto;
+  }
+  .dashboard-lower-grid > .panel:last-child .mini-records {
+    display: block;
+  }
+  .dashboard-section-title > div {
+    align-items: stretch;
+    flex-direction: row;
+  }
+  .panel-heading,
+  .airmech-overview .panel-heading {
+    padding: 18px;
+  }
+  .record-hero h1 {
+    font-size: 26px;
+  }
+  .record-hero {
+    padding: 20px;
+    gap: 14px;
+  }
+  .record-hero > div:nth-child(2) {
+    min-width: 0;
+  }
+  .record-hero-actions {
+    margin: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .record-hero-actions .button,
+  .record-workflow-actions .button {
+    font-size: 14px;
+    min-height: 44px;
+    white-space: normal;
+  }
+  .record-tabs > a {
+    font-size: 15px;
+  }
+  .customer-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .detail-fields {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .record-form {
+    padding: 20px;
+  }
+  .record-form input,
+  .record-form select,
+  .record-form textarea,
+  .global-search input,
+  .global-search.large input,
+  .list-search input {
+    font-size: 16px;
+  }
+  .record-form label > span {
+    font-size: 14px;
+  }
+  .form-actions .button,
+  .work-panel .form-actions > .button {
+    font-size: 15px;
+    white-space: normal;
+  }
+  .work-panel .form-actions {
+    bottom: 80px;
+  }
+  .dispatch-jobs,
+  .assigned-job-grid,
+  .dispatch-engineers {
+    grid-template-columns: 1fr;
+  }
+  .report-nav {
+    white-space: normal;
+    overflow: visible;
+  }
+  .report-nav > a {
+    font-size: 14px;
+    padding: 12px;
+  }
+  .report-header {
+    padding: 20px;
+  }
+  .report-header h2 {
+    font-size: 22px;
+  }
+  .report-summary {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 20px;
+  }
+  .report-status {
+    grid-template-columns: minmax(100px, 1fr) minmax(50px, 1fr) 20px;
+  }
+  .notification-row {
+    flex-wrap: wrap;
+  }
+  .notification-row .badge {
+    margin-left: 0;
+  }
+  .settings-grid .padded {
+    padding: 20px;
+  }
+  .service-report > header {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .field-shell main {
+    padding: 20px 16px;
+  }
+  .field-welcome {
+    margin-inline: -16px;
+  }
+}
+@media print {
+  .main-shell {
+    margin: 0;
+    width: 100%;
+  }
+  .table-wrap {
+    display: block;
+  }
+  .mobile-record-list,
+  .mobile-topbar-brand,
+  .mobile-more {
+    display: none;
+  }
+  .page-content {
+    padding: 0;
+  }
+  .panel {
+    box-shadow: none;
+  }
+}
