@@ -20,7 +20,7 @@ export async function FinanceRegister({entity,query,profile}:{entity:string;quer
   lookups(['customers','projects','amc_contracts']),
   entity==='receivables'&&companyFinance(profile.role)?financialOverview():Promise.resolve(null),
  ]);
- const lookup=await recordLookups(entity,data.records);const meta=getEntity(entity);
+ const lookup=await recordLookups(entity,data.records,filterLookups);const meta=getEntity(entity);
  return <><PageHeader module={entity} eyebrow="FINANCE · OMR" title={meta.label} description={entity==='receivables'?'Customer balances, due dates and collection priorities.':meta.description} action={meta.create&&canAccess(profile.role,entity,true)?<Link className="button" href={`/${entity}/new`}>New {meta.singular.toLowerCase()}</Link>:undefined}/><Notice error={query.error} success={query.success}/>
  {summary&&<><FinancialMetrics metrics={[{label:'Outstanding',value:summary.outstanding,money:true},{label:'Overdue',value:summary.overdue_amount,money:true},{label:'Overdue invoices',value:summary.overdue_invoices},{label:'Due within 30 days',value:summary.invoices_due}]}/><MoneyBars title="Receivables aging" description="Company-wide amounts and invoice counts by days past due" values={summary.aging.map(a=>({label:a.bucket,value:a.amount,context:`${a.invoice_count} invoices`}))}/></>}
  <section className="panel toolbar-panel"><form className="finance-toolbar" method="get"><label className="search-field"><span className="sr-only">Search</span><input name="q" placeholder="Search description or reference…" defaultValue={query.q}/></label><select name="status" defaultValue={query.status??''} aria-label="Status"><option value="">All statuses</option>{meta.statuses.map(s=><option key={s}>{s}</option>)}</select>

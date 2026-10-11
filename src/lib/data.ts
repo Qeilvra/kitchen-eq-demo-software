@@ -3,7 +3,7 @@ import { supabase } from "./supabase";
 import { authorize } from "./auth";
 import { catalog, fieldsFor, getEntity } from "./catalog";
 import type { RecordRow } from "./domain";
-import {financeEntities} from './finance-catalog';
+import { financeEntities } from "./finance-catalog";
 export type Lookup = Record<
   string,
   {
@@ -31,15 +31,16 @@ export async function listRecords(
   const db = await supabase();
   const size = options.limit ?? 20;
   const page = Math.max(1, options.page ?? 1);
-  if([...financeEntities,'quotations','quotation_items'].includes(entity)){
-    const filters:Record<string,string>={};
-    if(options.q) filters.q=options.q;if(options.status) filters.status=options.status;
-    if(options.foreign && options.parent) filters[options.foreign]=options.parent;
-    const {data,error}=await db.rpc('am_finance_read',{entity,filters,page,size});
-    if(error) throw new Error('Unable to load financial records. Apply the finance migrations.');
-    const records=(data?.records??[]) as RecordRow[];
-    for(const row of records) if(row.effective_status) row.status=String(row.effective_status);
-    return {records,count:Number(data?.count??0),page,size};
+  if ([...financeEntities, "quotations", "quotation_items"].includes(entity)) {
+    const filters: Record<string, string> = {};
+    if (options.q) filters.q = options.q;
+    if (options.status) filters.status = options.status;
+    if (options.foreign && options.parent) filters[options.foreign] = options.parent;
+    const { data, error } = await db.rpc("am_finance_read", { entity, filters, page, size });
+    if (error) throw new Error("Unable to load financial records. Apply the finance migrations.");
+    const records = (data?.records ?? []) as RecordRow[];
+    for (const row of records) if (row.effective_status) row.status = String(row.effective_status);
+    return { records, count: Number(data?.count ?? 0), page, size };
   }
   if (entity === "notifications") await db.rpc("am_sync_notifications");
   let query = db
@@ -116,12 +117,12 @@ export async function getRecord(entity: string, id: string) {
   getEntity(entity);
   await authorize(entity);
   const db = await supabase();
-  if([...financeEntities,'quotations','quotation_items'].includes(entity)){
-    const {data,error}=await db.rpc('am_finance_read',{entity,target:id});
-    if(error) throw new Error('Unable to load financial record.');
-    const row=data?.records?.[0] as RecordRow|undefined;
-    if(row?.effective_status) row.status=String(row.effective_status);
-    return row??null;
+  if ([...financeEntities, "quotations", "quotation_items"].includes(entity)) {
+    const { data, error } = await db.rpc("am_finance_read", { entity, target: id });
+    if (error) throw new Error("Unable to load financial record.");
+    const row = data?.records?.[0] as RecordRow | undefined;
+    if (row?.effective_status) row.status = String(row.effective_status);
+    return row ?? null;
   }
   const { data, error } = await db
     .from(entity)
@@ -164,7 +165,7 @@ export async function lookups(refs: string[], ids?: Record<string, string[]>): P
   );
   return result;
 }
-export async function recordLookups(entity: string, rows: RecordRow[]) {
+export async function recordLookups(entity: string, rows: RecordRow[], existing: Lookup = {}) {
   const fields = getEntity(entity).fields.filter((f) => f.ref);
   const ids: Record<string, string[]> = {};
   fields.forEach((f) => {
@@ -173,8 +174,17 @@ export async function recordLookups(entity: string, rows: RecordRow[]) {
       ...rows.map((row) => String(row[f.key] ?? "")).filter(Boolean),
     ];
   });
-  return lookups(
-    Object.keys(ids).filter((key) => ids[key].length),
-    ids,
-  );
+  const result: Lookup = {};
+  const missing: Record<string, string[]> = {};
+  for (const [ref, requested] of Object.entries(ids)) {
+    const targets = new Set(requested);
+    const known = (existing[ref] ?? []).filter((row) => targets.has(row.id));
+    result[ref] = known;
+    const covered = new Set(known.map((row) => row.id));
+    const remaining = [...targets].filter((id) => !covered.has(id));
+    if (remaining.length) missing[ref] = remaining;
+  }
+  const fetched = await lookups(Object.keys(missing), missing);
+  for (const [ref, values] of Object.entries(fetched)) result[ref] = [...result[ref], ...values];
+  return result;
 }

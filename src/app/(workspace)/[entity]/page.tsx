@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import {financeEntities} from '@/lib/finance-catalog';
-import {FinanceRegister} from '@/components/finance-workspace';
+import { financeEntities } from "@/lib/finance-catalog";
+import { FinanceRegister } from "@/components/finance-workspace";
 import { catalog, getEntity } from "@/lib/catalog";
 import { requireProfile } from "@/lib/auth";
 import { canAccess } from "@/lib/domain";
@@ -48,33 +48,37 @@ export default async function ListPage({
   const query = await searchParams;
   const profile = await requireProfile();
   if (!catalog[entity] || !canAccess(profile.role, entity)) notFound();
-  if(financeEntities.includes(entity)) return <FinanceRegister entity={entity} query={query} profile={profile}/>;
+  if (financeEntities.includes(entity))
+    return <FinanceRegister entity={entity} query={query} profile={profile} />;
   const meta = getEntity(entity);
   const page = Math.max(1, Math.min(10000, Number.parseInt(query.page ?? "1", 10) || 1));
-  const data = await listRecords(entity, {
-    q: query.q,
-    status: query.status,
-    page,
-    foreign: query.foreign,
-    parent: query.parent,
-  });
-  const lookup = await recordLookups(entity, data.records);
-  if (entity === "complaints") {
-    const engineerIds = data.records.map((row) => String(row.engineer_id ?? "")).filter(Boolean);
-    if (engineerIds.length)
-      Object.assign(lookup, await lookups(["engineers"], { engineers: engineerIds }));
-  }
-  const presentationRows =
-    entity === "quotations"
-      ? await quotationPresentation(data.records)
-      : entity === "equipment"
-        ? await assetPresentation(data.records, profile)
-        : data.records;
-  const maintenance =
+  const [data, maintenance, serviceSignals] = await Promise.all([
+    listRecords(entity, {
+      q: query.q,
+      status: query.status,
+      page,
+      foreign: query.foreign,
+      parent: query.parent,
+    }),
     entity === "amc_contracts" && canAccess(profile.role, "pm_schedules")
-      ? await maintenanceView()
-      : undefined;
-  const serviceSignals = entity === "complaints" ? await overviewSignals(profile) : undefined;
+      ? maintenanceView()
+      : Promise.resolve(undefined),
+    entity === "complaints" ? overviewSignals(profile) : Promise.resolve(undefined),
+  ]);
+  const engineerIds =
+    entity === "complaints"
+      ? data.records.map((row) => String(row.engineer_id ?? "")).filter(Boolean)
+      : [];
+  const [lookup, engineers, presentationRows] = await Promise.all([
+    recordLookups(entity, data.records),
+    engineerIds.length ? lookups(["engineers"], { engineers: engineerIds }) : Promise.resolve({}),
+    entity === "quotations"
+      ? quotationPresentation(data.records)
+      : entity === "equipment"
+        ? assetPresentation(data.records, profile)
+        : Promise.resolve(data.records),
+  ]);
+  Object.assign(lookup, engineers);
   const writable = canAccess(profile.role, entity, true);
   return (
     <>

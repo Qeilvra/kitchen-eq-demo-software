@@ -17,7 +17,7 @@ export async function FinancialReports({ choice, profile, customer, page = 1 }: 
   const [data, customers] = await Promise.all([
     financialReport(report.key, customer, page), lookups(["customers"]),
   ]);
-  const lookup = await recordLookups(report.entity, data.records);
+  const lookup = await recordLookups(report.entity, data.records, customers);
   const { summary } = data;
   return <>
     <PageHeader title="Financial reports" eyebrow="COMMERCIAL & FINANCIAL INTELLIGENCE"

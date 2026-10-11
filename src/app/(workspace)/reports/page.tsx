@@ -6,7 +6,7 @@ import { canAccess } from "@/lib/domain";
 import { supabase } from "@/lib/supabase";
 import { fieldsFor } from "@/lib/catalog";
 import type { RecordRow } from "@/lib/domain";
-import { recordLookups } from "@/lib/data";
+import { listRecords, recordLookups } from "@/lib/data";
 import { PageHeader, RecordTable } from "@/components/records";
 import { reports } from "@/lib/reports";
 import { ReportSummary } from "@/components/design-system";
@@ -17,17 +17,31 @@ import {
   ServiceTrendPanel,
 } from "@/components/operational-insights";
 import { DataPanel } from "@/components/operations-ui";
-import {financialReports,reportPermission} from '@/lib/financial-reports';
-import {FinancialReports} from '@/components/financial-reports';
+import { financialReports, reportPermission } from "@/lib/financial-reports";
+import { FinancialReports } from "@/components/financial-reports";
 export default async function Reports({
   searchParams,
 }: {
-  searchParams: Promise<{ report?: string; page?: string;customer?:string }>;
+  searchParams: Promise<{ report?: string; page?: string; customer?: string }>;
 }) {
   const profile = await requireProfile();
   if (profile.role === "engineer") notFound();
-  const { report: choice, page: pageString,customer } = await searchParams;
-  if(financialReports.some(r=>r.key===choice)&&canAccess(profile.role,reportPermission(financialReports.find(r=>r.key===choice)!.entity)))return <FinancialReports choice={choice!} profile={profile} customer={customer} page={Math.max(1,Number.parseInt(pageString??'1',10)||1)}/>;
+  const { report: choice, page: pageString, customer } = await searchParams;
+  if (
+    financialReports.some((r) => r.key === choice) &&
+    canAccess(
+      profile.role,
+      reportPermission(financialReports.find((r) => r.key === choice)!.entity),
+    )
+  )
+    return (
+      <FinancialReports
+        choice={choice!}
+        profile={profile}
+        customer={customer}
+        page={Math.max(1, Number.parseInt(pageString ?? "1", 10) || 1)}
+      />
+    );
   const available = reports.filter((r) => canAccess(profile.role, r.entity));
   const report = available.find((r) => r.key === choice) ?? available[0];
   if (!report) notFound();
@@ -38,15 +52,23 @@ export default async function Reports({
   if (report.key === "workload") query = query.not("status", "in", "(Completed,Cancelled)");
   if (report.key === "pm") query = query.neq("status", "Completed");
   if (report.key === "active-projects") query = query.eq("status", "Active");
-  const { data, count, error } = await query
-    .order("created_at", { ascending: false })
-    .range((page - 1) * 20, page * 20 - 1);
+  // The finance reader includes persisted totals for the entire page in one RPC.
+  const [{ data, count, error }, serviceSignals] = await Promise.all([
+    report.entity === "quotations"
+      ? listRecords("quotations", { page }).then((result) => ({
+          data: result.records,
+          count: result.count,
+          error: null,
+        }))
+      : query.order("created_at", { ascending: false }).range((page - 1) * 20, page * 20 - 1),
+    report.key === "complaints" ? overviewSignals(profile) : Promise.resolve(undefined),
+  ]);
   if (error) throw new Error("Unable to load report data.");
   const rows = (data ?? []) as unknown as RecordRow[];
-  const lookup = await recordLookups(report.entity, rows);
-  const presentationRows =
-    report.entity === "quotations" ? await quotationPresentation(rows) : rows;
-  const serviceSignals = report.key === "complaints" ? await overviewSignals(profile) : undefined;
+  const [lookup, presentationRows] = await Promise.all([
+    recordLookups(report.entity, rows),
+    report.entity === "quotations" ? quotationPresentation(rows) : Promise.resolve(rows),
+  ]);
   return (
     <>
       <PageHeader
@@ -64,7 +86,13 @@ export default async function Reports({
       <div className="reports-layout">
         <nav className="report-nav" aria-label="Report views">
           <h2>Report library</h2>
-          {financialReports.filter(r=>canAccess(profile.role,reportPermission(r.entity))).map(r=><Link href={`/reports?report=${r.key}`} key={r.key}>{r.label}</Link>)}
+          {financialReports
+            .filter((r) => canAccess(profile.role, reportPermission(r.entity)))
+            .map((r) => (
+              <Link href={`/reports?report=${r.key}`} key={r.key}>
+                {r.label}
+              </Link>
+            ))}
           {available.map((r) => (
             <Link
               key={r.key}
