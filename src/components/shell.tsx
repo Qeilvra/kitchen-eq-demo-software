@@ -22,7 +22,9 @@ import {
   ListChecks,
   MoreHorizontal,
   MapPin,
-  Receipt,Wallet,Banknote,
+  Receipt,
+  Wallet,
+  Banknote,
 } from "lucide-react";
 import { Brand } from "./brand";
 import { SearchInput, MobileMenu, BellIcon } from "./ui";
@@ -46,9 +48,9 @@ export const navigation = [
     icon: CalendarClock,
     entity: "amc_contracts",
   },
-  { href:'/invoices',label:'Invoices',icon:Receipt,entity:'invoices'},
-  { href:'/payments',label:'Payments',icon:Wallet,entity:'payments'},
-  { href:'/receivables',label:'Receivables',icon:Banknote,entity:'receivables'},
+  { href: "/invoices", label: "Invoices", icon: Receipt, entity: "invoices" },
+  { href: "/payments", label: "Payments", icon: Wallet, entity: "payments" },
+  { href: "/receivables", label: "Receivables", icon: Banknote, entity: "receivables" },
   { href: "/reports", label: "Reports", icon: ChartNoAxesCombined, entity: null },
 ];
 const operationalTools = [
@@ -62,6 +64,16 @@ const operationalTools = [
   { href: "/service_reports", label: "Service Reports", icon: FileText, entity: "service_reports" },
   { href: "/documents", label: "Documents", icon: FolderOpen, entity: "documents" },
 ];
+const navigationGroups = [
+  { label: "OPERATIONS", hrefs: ["/dashboard", "/customers"] },
+  { label: "COMMERCIAL", hrefs: ["/enquiries", "/quotations", "/projects"] },
+  {
+    label: "SERVICE",
+    hrefs: ["/complaints", "/equipment", "/engineers", "/work_orders", "/amc_contracts"],
+  },
+  { label: "FINANCE", hrefs: ["/invoices", "/payments", "/receivables"] },
+  { label: "INTELLIGENCE", hrefs: ["/reports"] },
+];
 export function Shell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
   const items = navigation.filter(
     (item) =>
@@ -69,17 +81,29 @@ export function Shell({ profile, children }: { profile: Profile; children: React
       (profile.role !== "engineer" || !["/reports", "/dashboard"].includes(item.href)),
   );
   const nav = (
-    <nav className="nav-list">
-      {items.map(({ href, label, icon: Icon }) => (
-        <div key={href}>{['/enquiries','/complaints','/invoices','/reports'].includes(href)&&<div className="nav-group-label">{href==='/enquiries'?'COMMERCIAL':href==='/complaints'?'SERVICE':href==='/invoices'?'FINANCE':'INTELLIGENCE'}</div>}<NavLink href={href}>
-          <Icon size={21} />
-          <span>{label}</span>
-        </NavLink></div>
-      ))}
-      <NavLink href="/settings">
-        <Settings size={21} />
-        <span>Admin</span>
-      </NavLink>
+    <nav className="nav-list workspace-nav" aria-label="Workspace navigation">
+      {navigationGroups.map(({ label: groupLabel, hrefs }) => {
+        const groupItems = items.filter((item) => hrefs.includes(item.href));
+        if (!groupItems.length) return null;
+        return (
+          <section className="nav-group" key={groupLabel} aria-label={groupLabel}>
+            <div className="nav-group-label">{groupLabel}</div>
+            {groupItems.map(({ href, label, icon: Icon }) => (
+              <NavLink key={href} href={href} revealActive>
+                <Icon size={21} />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+          </section>
+        );
+      })}
+      <section className="nav-group" aria-label="SYSTEM">
+        <div className="nav-group-label">SYSTEM</div>
+        <NavLink href="/settings" revealActive>
+          <Settings size={21} />
+          <span>Admin</span>
+        </NavLink>
+      </section>
       <details className="nav-tools">
         <summary>
           Operational tools <ChevronDown size={13} />
@@ -87,8 +111,8 @@ export function Shell({ profile, children }: { profile: Profile; children: React
         {operationalTools
           .filter((item) => canAccess(profile.role, item.entity))
           .map(({ href, label, icon: Icon }) => (
-            <NavLink key={href} href={href}>
-              <Icon size={16} />
+            <NavLink key={href} href={href} revealActive>
+              <Icon size={21} />
               <span>{label}</span>
             </NavLink>
           ))}
@@ -101,7 +125,6 @@ export function Shell({ profile, children }: { profile: Profile; children: React
         <Link href="/dashboard" className="brand-link">
           <Brand />
         </Link>
-        <div className="sidebar-caption">OPERATIONS WORKSPACE</div>
         {nav}
         <div className="sidebar-bottom">
           <div className="workspace-indicator">
